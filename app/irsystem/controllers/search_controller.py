@@ -345,5 +345,5 @@ def search():
 		final = main(budget,feature_list,condition)
 
 
-	return render_template('search.php', name=project_name,netid=net_id, check=check,  mate=mate, flag=flag,
+	return render_template('search.html', name=project_name,netid=net_id, check=check,  mate=mate, flag=flag,
 							condition=condition, names=final[0], urls = final[1])
