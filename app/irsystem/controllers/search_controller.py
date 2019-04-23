@@ -10,8 +10,6 @@ from collections import defaultdict
 from nltk.tokenize import TreebankWordTokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from scipy.sparse.linalg import svds
-import matplotlib
-import matplotlib.pyplot as plt
 import Levenshtein
 from sklearn.preprocessing import normalize
 
