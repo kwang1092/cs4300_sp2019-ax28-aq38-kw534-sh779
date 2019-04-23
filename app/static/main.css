@@ -212,3 +212,15 @@ transition: all 0.3s ease 0s;
 #feature_options{
   margin-top:65px;
 }
+.slider{
+  width:60%;
+  margin-top:50px;
+  display:inline-block;
+  vertical-align: middle;
+}
+
+div input{
+  vertical-align: middle;
+  padding:0;
+  margin:0;
+}

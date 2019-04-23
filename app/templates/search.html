@@ -7,9 +7,26 @@
   <link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Archivo" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+  <!--Plugin CSS file with desired skin-->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/css/ion.rangeSlider.min.css"/>
+
+   <!--jQuery-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+   <!--Plugin JavaScript file-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.0/js/ion.rangeSlider.min.js"></script>
 </head>
 <body>
+  <div class="topcorner">
+      <p>Project Name: {{ name }}</p>
+      <p>Student Name: ({{ netid }})</p>
+      <p>Budget: {{ budget }}</p>
+  </div>
+
   <!-- <form class="form-inline global-search"> -->
   <div class="container">
     <svg class="total" width = "100%" height="680">
@@ -35,8 +52,29 @@
                 older
               </label>
             </div>
-            <div id="budget_options" class="custom-select" style="width:200px;">
-              <select name="budgets" required>
+            <div class="slider">
+            <input type="text" class="js-range-slider" name="budgets" value="" />
+          </div>
+            <script>
+             $(".js-range-slider").ionRangeSlider({
+        type: "double",
+        min: 0,
+        max: 1500,
+        from: 200,
+        to: 500,
+        prefix:"$",
+        skin: "modern",
+        grid: true
+    });
+            </script>
+            <!-- <div id="budget_options" class=s"custom-select" style="width:200px;">
+              <div data-role="rangeslider">
+              <label for="price-min">Price:</label>
+              <input type="range" name="price-min" id="price-min" value="200" min="0" max="1200">
+              <label for="price-max">Price:</label>
+              <input type="range" name="price-max" id="price-max" value="800" min="0" max="1200">
+            </div> -->
+              <!-- <select name="budgets" required>
                 <option value="">Select a Budget</option>
                 <option value="1">$0-$199</option>
                 <option value="2">$200-$399</option>
@@ -45,7 +83,7 @@
                 <option value="5">$800-$999</option>
                 <option value="6">$1000-$1199</option>
                 <option value="7">$1200+</option>
-              </select>
+              </select> -->
             </div>
             <div id="feature_options" style="width:'35%';text-align:center">
               <table>
@@ -200,6 +238,8 @@
             then close all select boxes:*/
             document.addEventListener("click", closeAllSelect);
             </script>
+            <input id="input" type="text" name="old_phone" class="form-control" placeholder="Old Phone">
+            <input id="input" type="text" name="feature_text" class="form-control" placeholder="Features">
             <button id="button_svg" width="100%" height="100%" type="submit" class="button">Submit</button>
           </form>
         </foreignObject>
