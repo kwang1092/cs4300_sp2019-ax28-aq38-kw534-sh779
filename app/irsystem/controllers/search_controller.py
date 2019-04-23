@@ -8,7 +8,12 @@ import json
 from textblob import TextBlob
 from collections import defaultdict
 from nltk.tokenize import TreebankWordTokenizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from scipy.sparse.linalg import svds
+import matplotlib
+import matplotlib.pyplot as plt
 import Levenshtein
+from sklearn.preprocessing import normalize
 
 apple_mult = 1.24
 project_name = "sellPhones"
@@ -39,6 +44,11 @@ def search():
     feature_list = request.args.getlist('feature')
     old_phone = ""
     old_phone = request.args.get('old_phone')
+    feature_text = request.args.get('feature_text')
+
+    if not feature_list:
+        return render_template('search.html', name=project_name,netid=net_id, check=check,  mate=mate, flag=flag,
+                                condition=condition, names=[], urls = [], budget=str(budget))
 
     if budget and feature_list and condition:
 
@@ -329,7 +339,6 @@ def search():
             else:
                 condition = 0
             query_feat = feature_list
-            print(query_feat)
 
             #query_feat = ["ram","front camera","cpu","rear camera"]
             # price_range= luxury
@@ -398,14 +407,152 @@ def search():
             rankings = np.argsort(cossim_vec[rankings])[::-1]
             cossim_vec /= max(cossim_vec)
 
-            if old_query != "":
-                for idx in rankings:
-                    best_dist = edit_distance_search(old_query,[prange_to_phone[idx]])[0][0]
-                    if best_dist <= 5:
-                        results[prange_to_phone[idx]] += cossim_vec[idx]
-                    else:
-                        results[prange_to_phone[idx]] += 3*cossim_vec[idx]
-                        results[prange_to_phone[idx]] /= 5
+
+            if feature_text:
+                custom_input_query = feature_text
+                phonenames = list(phones.keys())
+
+                brand_dic = {phone.split(" ")[0]:[] for phone in phones}
+                for i,phone in enumerate(phones):
+                    phone_name = ""
+                    for word in phone.split(" "):
+                        phone_name += word+ " "
+                    brand_dic[phone.split(" ")[0]].append(phone_name[:len(phone_name)-1])
+
+                brands = list(brand_dic.keys())
+                brands.remove('T-Mobile')
+                # brands.remove('AT&T')
+
+                with open('app/static/userreviews.json', 'r') as fp:
+                    userreviews = json.load(fp)
+
+                with open('app/static/concat_reviews.json', 'r') as fp:
+                    concat_reviews = json.load(fp)
+
+                with open('app/static/tokenized_reviews.json', 'r') as fp:
+                    tokenized_reviews = json.load(fp)
+
+                lookaround_matrix = np.loadtxt('app/static/sent_anal_matrix.txt')
+
+                review_vocab = []
+                for phone,words in tokenized_reviews.items():
+                    review_vocab += words
+
+                #remove dups
+                review_vocab = list(set(review_vocab))
+                review_vocab.sort()
+
+                review_phonenames = list(tokenized_reviews.keys())
+
+                def build_inv_idx(lst):
+                    """ Builds an inverted index.
+
+                    Params: {lst: List}
+                    Returns: Dict (an inverted index of phones)
+                    """
+                    inverted_idx = {}
+                    for idx in range(0,len(lst)):
+                        inverted_idx[lst[idx]] = idx
+                    return inverted_idx
+
+                review_vocab_invidx = build_inv_idx(review_vocab)
+                review_names_invidx = build_inv_idx(review_phonenames)
+
+                review_list = [concat_reviews[p] for p in concat_reviews]
+                vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
+                my_matrix = vectorizer.fit_transform(review_list).transpose()
+                u, s, v_trans = svds(my_matrix, k=60)
+                words_compressed, _, docs_compressed = svds(my_matrix, k=40)
+                docs_compressed = docs_compressed.transpose()
+                word_to_index = vectorizer.vocabulary_
+                index_to_word = {i:t for t,i in word_to_index.items()}
+                words_compressed = normalize(words_compressed, axis = 1)
+                def closest_words(word_in, k = 10):
+                    if word_in not in word_to_index: return "Not in vocab."
+                    sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
+                    asort = np.argsort(-sims)[:k+1]
+                    return [(index_to_word[i],sims[i]/sims[asort[0]]) for i in asort[1:]]
+
+                def query_word(word):
+                    close_words = closest_words(word)
+                    if close_words == "Not in vocab.":
+                        return word.split(" ")
+                    return [word,close_words[0][0],close_words[1][0]]
+
+                words_from_svd = []
+                for word in custom_input_query.split(" "):
+                    words_from_svd += query_word(word)
+                n_words = len(words_from_svd)
+                n_phones = len(review_phonenames)
+                query_matrix = np.zeros((n_phones,n_words))
+
+                new_string = []
+                for word in words_from_svd:
+                    if word in review_vocab:
+                        new_string.append(word)
+
+                #RANKINGS using custom input
+                for abc in review_phonenames:
+                    p = review_names_invidx[abc]
+                    for i,word in enumerate(new_string):
+                        w = review_vocab_invidx[word]
+                        query_matrix[p,i] = lookaround_matrix[p,w]
+
+                #Outputting ranking based on social component
+                query_matrix = np.sum(query_matrix, axis=1)
+                query_matrix = query_matrix / len(new_string)
+
+                #WITH RATINGS (to be merged with cell above later)
+                for phone in review_phonenames:
+                    p = review_names_invidx[phone]
+                    rating = float(userreviews[phone][0])
+                    rating_effect = 1.0
+                    ratio = rating/5.0
+                    polarity = query_matrix[p]
+
+                    if rating >= 4 and polarity > 0:
+                        rating_effect = 1.3*ratio
+                    elif rating >= 4 and polarity < 0:
+                        rating_effect = -1.3*ratio
+                    elif rating <= 2.5 and polarity > 0:
+                        rating_effect = -1.0*ratio
+                    elif rating <= 2.5 and polarity < 0:
+                        rating_effect = 1.3+(1-ratio)
+                    query_matrix[p] = rating_effect*polarity
+
+                ranking_asc = list(np.argsort(query_matrix))
+                ranking_desc = ranking_asc[::-1]
+
+                test_dict = {}
+                for i in ranking_desc:
+                    test_dict[review_phonenames[i]] = query_matrix[i]
+
+
+                if old_query != "":
+                    for idx in rankings:
+                        best_dist = edit_distance_search(old_query,[prange_to_phone[idx]])[0][0]
+                        if prange_to_phone[idx] in test_dict:
+                            if best_dist <= 5:
+                                results[prange_to_phone[idx]] += cossim_vec[idx] + test_dict[prange_to_phone[idx]]/2
+                            else:
+                                results[prange_to_phone[idx]] += 3*(cossim_vec[idx] +  test_dict[prange_to_phone[idx]]/2)
+                                results[prange_to_phone[idx]] /= 5
+                        else:
+                            if best_dist <= 5:
+                                results[prange_to_phone[idx]] += cossim_vec[idx]
+                            else:
+                                results[prange_to_phone[idx]] += 3*(cossim_vec[idx])
+                                results[prange_to_phone[idx]] /= 5
+            else:
+                print("yo")
+                if old_query != "":
+                    for idx in rankings:
+                        best_dist = edit_distance_search(old_query,[prange_to_phone[idx]])[0][0]
+                        if best_dist <= 5:
+                            results[prange_to_phone[idx]] += cossim_vec[idx]
+                        else:
+                            results[prange_to_phone[idx]] += 3*(cossim_vec[idx])
+                            results[prange_to_phone[idx]] /= 5
 
             final_rank = []
             for phone in results:
