@@ -455,39 +455,39 @@ def search():
             review_vocab_invidx = build_inv_idx(review_vocab)
             review_names_invidx = build_inv_idx(review_phonenames)
 
-            review_list = [concat_reviews[p] for p in concat_reviews]
-            vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
-            my_matrix = vectorizer.fit_transform(review_list).transpose()
-            u, s, v_trans = svds(my_matrix, k=100)
-            words_compressed, _, docs_compressed = svds(my_matrix, k=30)
-            docs_compressed = docs_compressed.transpose()
-            word_to_index = vectorizer.vocabulary_
-            index_to_word = {i:t for t,i in word_to_index.items()}
-            words_compressed = normalize(words_compressed, axis = 1)
-
-            def closest_words(word_in, k = 10):
-                if word_in not in word_to_index: return "Not in vocab."
-                sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
-                asort = np.argsort(-sims)[:k+1]
-                return [(index_to_word[i],sims[i]/sims[asort[0]]) for i in asort[1:]]
-
-            def query_word(word):
-                close_words = closest_words(word)
-                return [word,close_words[0][0],close_words[1][0]]
+            # review_list = [concat_reviews[p] for p in concat_reviews]
+            # vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
+            # my_matrix = vectorizer.fit_transform(review_list).transpose()
+            # u, s, v_trans = svds(my_matrix, k=100)
+            # words_compressed, _, docs_compressed = svds(my_matrix, k=30)
+            # docs_compressed = docs_compressed.transpose()
+            # word_to_index = vectorizer.vocabulary_
+            # index_to_word = {i:t for t,i in word_to_index.items()}
+            # words_compressed = normalize(words_compressed, axis = 1)
+            #
+            # def closest_words(word_in, k = 10):
+            #     if word_in not in word_to_index: return "Not in vocab."
+            #     sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
+            #     asort = np.argsort(-sims)[:k+1]
+            #     return [(index_to_word[i],sims[i]/sims[asort[0]]) for i in asort[1:]]
+            #
+            # def query_word(word):
+            #     close_words = closest_words(word)
+            #     return [word,close_words[0][0],close_words[1][0]]
 
             #Taking input from SVD
-            words_from_svd = []
-            for word in feature_text.split(" "):
-                words_from_svd += query_word(word)
+            words_from_svd = feature_text.split(" ")
+            # for word in feature_text.split(" "):
+            #     words_from_svd += query_word(word)
             n_words = len(words_from_svd)
             n_phones = len(review_phonenames)
             query_matrix = np.zeros((n_phones,n_words))
-
-            new_string = []
-            for word in words_from_svd:
-                if word in review_vocab:
-                    new_string.append(word)
-
+            #
+            # new_string = []
+            # for word in words_from_svd:
+            #     if word in review_vocab:
+            #         new_string.append(word)
+            #
             #RANKINGS using custom input
             for phone in review_phonenames:
                 p = review_names_invidx[phone]
@@ -694,25 +694,25 @@ def search():
                        'waterproof': 'Water Resistance',
                       }
 
-            # def plot_bar(phone, features, i):
-            #     label = []
-            #     feat_scores = []
-            #     for f in features:
-            #         label.append(feat_labels[f])
-            #         feat_scores.append(feature_mat[phone_to_index[phone]][feat_to_index[f]])
-            #     #plotting
-            #     index = np.arange(len(label))
-            #     plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
-            #     plt.xlabel('Selected Features', fontsize=5)
-            #     plt.ylabel('Normalized Scores', fontsize=5)
-            #     plt.xticks(index, label, fontsize=5)
-            #     plt.ylim((0.0,1.0))
-            #     plt.title('Scores of User Selected Features')
-            #     plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
-            #     plt.close()
-            #
-            # for i,phone in enumerate(result[:18]):
-            #     plot_bar(phone, query_feat, i)
+            def plot_bar(phone, features, i):
+                label = []
+                feat_scores = []
+                for f in features:
+                    label.append(feat_labels[f])
+                    feat_scores.append(feature_mat[phone_to_index[phone]][feat_to_index[f]])
+                #plotting
+                index = np.arange(len(label))
+                plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
+                plt.xlabel('Selected Features', fontsize=5)
+                plt.ylabel('Normalized Scores', fontsize=5)
+                plt.xticks(index, label, fontsize=5)
+                plt.ylim((0.0,1.0))
+                plt.title('Scores of User Selected Features')
+                plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
+                plt.close()
+
+            for i,phone in enumerate(result[:18]):
+                plot_bar(phone, query_feat, i)
 
             # def clean_phone(url, i):
             #     with Image(filename=url) as img:
