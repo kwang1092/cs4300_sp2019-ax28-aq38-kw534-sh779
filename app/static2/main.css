@@ -1,0 +1,467 @@
+/* @media (min-width: 1200px) {
+.container {
+    max-width: 970px;
+}
+}
+@media (min-width:400px){
+.global-search {
+padding: 20px 0;
+text-align:center;
+} */
+/* body {
+padding-top: 15%;
+padding-bottom: 15px;
+}
+.global-search {
+text-align:center;
+padding:10px;
+}
+.global-search .form-control {
+width:500px;
+}
+.global-search * {
+display:inline-block;
+margin-bottom:0;
+}
+
+.topcorner{
+position:absolute;
+top:2%;
+right:2%;
+}
+.btn{
+background-color: #4285F4;
+border: none
+}
+.step-links a{
+color: #4285F4;
+} */
+
+/* #dialogue{
+outline: 9999px solid rgba(0,0,0,0.5);
+position: absolute;
+padding:700px;
+} */
+
+#main_options{
+  text-align: center;
+  float:center
+}
+
+body{
+  background-color: #D2D2D2;
+  font-family:Roboto;
+}
+label{
+  font-family:Roboto;
+}
+/* boilerplate stuff */
+
+html {
+  background-color: #f0f0f0;
+}
+
+body {
+  color: #555;
+  margin: 0;
+  padding: 1.44em 1.5em;
+}
+
+label {
+  cursor: pointer;
+}
+
+/* div {
+  padding: 0.5em 0;
+} */
+
+#condition_radios{
+  margin-top:0;
+}
+
+#budget_radios{
+  margin-top:60px;
+}
+
+/* hide the "real" radios visually */
+
+.radio input {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/* style the "fake" radios */
+
+.radio-value {
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 95% auto;
+  border: 0.0625em solid #bbb;
+  border-radius: 50%;
+  box-shadow: inset 0 0.0625em 0 0.0625em rgba(0,0,0,0.075);
+  display: inline-block;
+  height: 1.5em;
+  margin-right: 0.25em;
+  position: relative;
+  vertical-align: middle;
+  width: 1.5em;
+}
+
+input:checked + .radio-value {
+  background-color: #39CCCC;
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZmlsbD0iI0ZGRkZGRiIgZD0iTTM5LjM2MyA3OWwtMjMuMzYzLTIzLjUxIDExLjM0Ny0xMS40MTkgMTIuMzQ3IDEyLjQxOSAzMy4yODktMzMuNDkgMTEuMDE3IDExLjA4NS00NC42MzcgNDQuOTE1eiIvPjwvc3ZnPg==);
+  border-color: #169a9a;
+  box-shadow: 0 0.0625em 0 0.0625em rgba(0,0,0,0.075);
+}
+
+.button {
+color: white !important;
+font-family:Roboto;
+font-size:20px;
+background: #A9CFE8;
+padding: 20px;
+padding-top:10px;
+padding-bottom:10px;
+border: 4px solid #A9CFE8 !important;
+border-radius: 6px;
+cursor:pointer;
+display:block;
+top:60%;
+text-align:center;
+position:absolute;
+left:43%;
+}
+
+.button:hover {
+cursor:pointer;
+padding-right:23px;
+padding-left:23px;
+padding-top:12px;
+padding-bottom:12px;
+top:59.85%;
+left:42.6%;
+/* padding-right:25px; */
+/* padding-top:15px;
+padding-bottom:15px; */
+transition: all 0.3s ease 0s;
+}
+
+.main_rect:hover {
+  transform: scale(1.1);
+}
+.main_rect2:hover {
+  transform: scale(1.1);
+}
+.main_rect {
+  transition: all 0.2s;
+  transform-origin: 57% 50%;
+}
+.main_rect2 {
+  transition: all 0.2s;
+  transform-origin: 43% 50%;
+}
+
+/*the container must be positioned relative:*/
+.custom-select {
+  position: relative;
+  font-family: Arial;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+  background-color: gray;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #fff transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: gray;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+#budget_options{
+  left:16%;
+  margin-top:65px;
+}
+
+#feature_options{
+  margin-top:65px;
+}
+.slider{
+  width:60%;
+  margin-top:50px;
+  display:inline-block;
+  vertical-align: middle;
+}
+
+div input{
+  vertical-align: middle;
+  padding:0;
+  margin:0;
+}
+
+#texts{
+  margin-top:20px;
+}
+
+#slider2{
+  margin-left:11%;
+  width:78%;
+  margin-top:75px;
+  display:inline-block;
+  vertical-align: middle;
+}
+
+/* Customize the label (the container) */
+.check_container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.check_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 15px;
+  width: 15px;
+  background-color: #ccc;
+}
+
+/* On mouse-over, add a grey background color */
+.check_container:hover input ~ .checkmark {
+  background-color: #454545;
+}
+
+/* When the checkbox is checked, add a blue background */
+.check_container input:checked ~ .checkmark {
+  background-color: #AAC9DD;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.check_container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.check_container .checkmark:after {
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
+/* The container */
+.radio_container {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.radio_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom radio button */
+.radiomark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 12.5px;
+  width: 12.5px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.radio_container:hover input ~ .radiomark {
+  background-color: #454545;
+}
+
+/* When the radio button is checked, add a blue background */
+.radio_container input:checked ~ .radiomark {
+  background-color: #AAC9DD;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.radiomark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.radio_container input:checked ~ .radiomark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.radio_container .radiomark:after {
+ 	top: 4.5px;
+	left: 4.5px;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: white;
+}
+
+/*the container must be positioned relative:*/
+.custom-select {
+  position: relative;
+  font-family: Nunito;
+  border:0;
+  border-radius:15px;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+  background-color: #DCDCDC;
+  border-radius:15px;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #969696 transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #E9E9E9 transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #969696;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+  border-radius:15px;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: #DCDCDC;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  border-radius:15px;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.phones:hover{
+  fill:#302f2f;
+  transition: all 0.3s ease 0s;
+}

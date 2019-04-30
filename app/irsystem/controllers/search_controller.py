@@ -75,12 +75,14 @@ def search():
 
     if not feature_list :
         return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2,  mate=mate, flag=flag, flag2 = flag2,
-                                condition=condition, names=[], urls = [], budget=str(budget), features = [], close_words=[],scores=[],price=[])
+                                condition=condition, names=[], urls = [], budget=str(budget), features = [], close_words=[],scores=[],price=[],spnames=[],
+                                name_feat=[],name_val=[],spvals=[])
 
     if budget and feature_list and condition:
 
         def main(budget, feature_list,condition):
             phones = {}
+            old_specs = {}
             labels = []
             with open('app/static/gsmphones.csv', mode='r',encoding='utf-8') as csv_file:
                 csv_reader = csv.reader(csv_file)
@@ -89,229 +91,34 @@ def search():
                         labels = row
                     else:
                         phones[row[1]] = row[2:]
+                        old_specs[row[1]] = row
 
-            phones.pop("Samsung Galaxy S10 5G")
+            spec_to_index = {}
+            for i in range(len(labels)):
+                spec_to_index[labels[i].lower()] = i
 
-            for elt in phones:
-                l = len(phones[elt])
-                if l<100:
-                    while(len(phones[elt])<100):
-                        phones[elt].append(0)
+            dial_labels = ["technology","weight","type","size","resolution","os",
+               "cpu","internal","battery","single","3.5mm jack",
+               "sensors","colors"]
 
-            label_to_index = {labels[i].lower(): i-2 for i in range(len(labels))}
-            label_to_index["ppi"] = 81
-            label_to_index["storage"] = 82
-            label_to_index["ram"] = 83
-            label_to_index["rear camera"] = 85
-            label_to_index["front camera"] = 86
-            label_to_index["age"] = 87
-            label_to_index["face"]= 88
-            label_to_index["finger"] = 89
+            dial_to_output = ["Technology","Weight","Screen Type","Screen Size","Screen Resolution","OS",
+               "Processor","Storage","Battery","Camera","Audio Jack",
+               "Sensors","Colors"]
 
-            def getResolution(res):
-                lst = []
-                if len(res)>=12:
-                    lst = re.findall(r"\d+\.?\d?",res)
-                if len(lst)>1:
-                    return (int(lst[0]),int(lst[1]))
-                else:
-                    return (0,0)
+            nobat_phones = ["Oppo A5","i-mobile TV658 Touch&Move;","Nokia Lumia 900 AT&T;",
+                "Sony Ericsson Jalou D&G; edition","AT&T; Quickfire",
+                "AT&T; SMT5700","AT&T; Mustang","AT&T; 8525","HTC One X AT&T;"]
 
-            def getDiagonalSize(size):
-                if len(size)>=10:
-                    return float(re.findall(r"\d+\.?\d?",size)[0])
+            with open('app/static/phones_dict.json','r') as file:
+                phones = json.load(file)
+            with open('app/static/labels_dict.json','r') as file:
+                label_to_index = json.load(file)
 
-            def getThickness(dim):
-                lst = re.findall(r"\d+\.?\d+",dim)
-                if len(lst)>2:
-                    return(float(lst[2]))
-                else:
-                    return 0
-
-            new_phones = {}
-            for i,phone in enumerate(phones):
-                a,b = getResolution(phones[phone][label_to_index["resolution"]])
-                size= getDiagonalSize(phones[phone][label_to_index["size"]])
-                phones[phone][label_to_index["size"]] = size
-                diag= np.sqrt(a**2+b**2)
-                if size!=None and size>1.7 and size<=7.0 and a!=0 and b!=0:
-                    phones[phone][label_to_index["ppi"]] = diag/size
-                    card_slot = phones[phone][label_to_index["card slot"]]
-                    if card_slot.lower()=="no":
-                        phones[phone][label_to_index["card slot"]] = 0
-                    else:
-                        phones[phone][label_to_index["card slot"]] = 1
-                    new_phones[phone] = phones[phone]
-
-            phones = new_phones
-
-            new_phones = {}
-            for i,phone in enumerate(phones):
-                dim = phones[phone][label_to_index["dimensions"]]
-                if len(dim) >= 12 and "mm" in dim:
-                    phones[phone][label_to_index["dimensions"]] = getThickness(dim)
-                    new_phones[phone] = phones[phone]
-
-            phones = new_phones
-
-            def convertGB(num, byte):
-                if byte.lower()=="mb":
-                    return float(num)/1024
-                else:
-                    return num
-
-            new_phones = {}
-            for i,phone in enumerate(phones):
-                lst = re.findall(r"[\d.]+",phones[phone][label_to_index["internal"]])
-                byte= re.findall(r"[a-zA-Z]+",phones[phone][label_to_index["internal"]])
-                if len(lst)>1:
-                    mem = 0
-                    ram = 0
-                    if "ROM" in byte and "RAM" in byte:
-                        ram = convertGB(lst[-2],byte[byte.index('RAM')-1])
-                        mem = convertGB(lst[-1],byte[byte.index('ROM')-1])
-                    else:
-                        try:
-                            ram = convertGB(lst[-1],byte[byte.index('RAM')-1])
-                        except:
-                            ram = convertGB(lst[-1],byte[-1])
-                        if float(lst[-1]) >= 100:
-                            lst.pop(len(lst)-1)
-                        lst = [float(elt) for elt in lst]
-                        mem = convertGB(sorted(lst)[-1],byte[0])
-                    phones[phone][label_to_index["storage"]] = float(mem)
-                    phones[phone][label_to_index["ram"]] = float(ram)
-                    new_phones[phone] = phones[phone]
-                elif len(lst)==1 and float(lst[0]) > 0:
-                    phones[phone][label_to_index["storage"]] = float(convertGB(lst[-1],byte[0]))
-                    phones[phone][label_to_index["ram"]] = 0
-                new_phones[phone] = phones[phone]
-
-            phones=new_phones
-
-            new_phones = {}
-            for i,phone in enumerate(phones):
-                temp = phones[phone][label_to_index["price"]]
-                price = re.findall(r"\d+\.?\d?",temp)
-                curr = re.findall(r"[a-zA-Z]+",temp)
-                if len(temp) > 0:
-                    if curr[-1].lower()=="eur":
-                        phones[phone][label_to_index["price"]] = round(float(price[0]) * 1.13, 2)
-                    else:
-                        phones[phone][label_to_index["price"]] = round(float(price[0]) * 0.014, 2)
-                    new_phones[phone] = phones[phone]
-            phones = new_phones
-
-            def getBattery(dim):
-                if type(dim)!=str:
-                    return 0.0
-                lst = re.findall(r"\d+\.?\d?",dim)
-                if len(lst)>0:
-                    return float(lst[0])
-                else:
-                    return 0.0
-
-            new_phones = {}
-            for i,phone in enumerate(phones):
-                if "face" in (phones[phone][label_to_index["sensors"]]).lower():
-                    phones[phone][label_to_index["face"]] = 1.0
-                else:
-                    phones[phone][label_to_index["face"]] = 0.0
-                if "finger" in (phones[phone][label_to_index["sensors"]]).lower():
-                    phones[phone][label_to_index["finger"]] = 1.0
-                else:
-                    phones[phone][label_to_index["finger"]] = 0.0
-                new_phones[phone] = phones[phone]
-
-                b = getBattery(phones[phone][label_to_index["battery"]])
-                phones[phone][label_to_index["battery"]] = b
-                new_phones[phone] = phones[phone]
-
-                water = phones[phone][label_to_index["waterproof"]]
-                if type(water)==str and "yes" in water.lower():
-                    phones[phone][label_to_index["waterproof"]] = 1.0
-                else:
-                    phones[phone][label_to_index["waterproof"]] = 0.0
-
-                sim = phones[phone][label_to_index["sim"]].lower()
-                if "dual" in sim:
-                    phones[phone][label_to_index["sim"]] = 1
-                else:
-                    phones[phone][label_to_index["sim"]] = 0
-
-                temp = phones[phone][label_to_index["video"]]
-                fps  = re.findall(r"\d+[a-zA-z][a-zA-z]+",temp)
-                if len(fps)==0:
-                    fps = 0
-                else:
-                    fps = float(re.findall(r"\d+",fps[0])[0])
-                temp = re.findall(r"\d+\.?\d?",temp)
-                if len(temp) > 0:
-                    phones[phone][label_to_index["video"]] = float(temp[0])*(fps/30)
-                else:
-                    phones[phone][label_to_index["video"]] = 240.0
-
-                temp = phones[phone][label_to_index["announced"]]
-                temp = re.findall(r"\d+\.?\d+",temp)
-                if len(temp)>0:
-                    phones[phone][label_to_index["age"]] = 2019-float(temp[0])
-                    if phones[phone][label_to_index["age"]] <= 1:
-                        phones[phone][label_to_index["announced"]] = 1.
-                    else:
-                        phones[phone][label_to_index["announced"]] = 0.
-                else:
-                    phones[phone][label_to_index["age"]] = 7
-                    phones[phone][label_to_index["announced"]] = 0.
-
-                if "yes" in phones[phone][label_to_index["3.5mm jack"]].lower():
-                    phones[phone][label_to_index["3.5mm jack"]] = 1.0
-                else:
-                    phones[phone][label_to_index["3.5mm jack"]] = 0.0
-
-                temp = phones[phone][label_to_index["cpu"]].lower()
-                if "octa" in temp:
-                    phones[phone][label_to_index["cpu"]] = 8.0
-                elif "hexa" in temp:
-                    phones[phone][label_to_index["cpu"]] = 6.0
-                elif "quad" in temp:
-                    phones[phone][label_to_index["cpu"]] = 4.0
-                elif "dual" in temp:
-                    phones[phone][label_to_index["cpu"]] = 2.0
-                else:
-                    phones[phone][label_to_index["cpu"]] = 1.0
-
-                dual = phones[phone][label_to_index["dual"]]
-                front= re.findall(r"\d+",phones[phone][label_to_index["single"]])
-                if len(front)>1 and ("mp" in phones[phone][label_to_index["single_1"]].lower() or
-                                     "mp" in str(phones[phone][label_to_index["dual"]]).lower()):
-                    cam1 = float(front[0])
-                    if dual!="" and phone.split(" ")[0] != 'Acer':
-                        rear = re.findall(r"\d+",phones[phone][label_to_index["dual"]])
-                        phones[phone][label_to_index["dual"]] = 1
-                        cam2 = float(rear[0])
-                        phones[phone][label_to_index["front camera"]]= min(cam1,cam2)
-                        phones[phone][label_to_index["rear camera"]] = max(cam1,cam2)
-                    else:
-                        rear = re.findall(r"\d+",phones[phone][label_to_index["single_1"]])
-                        phones[phone][label_to_index["dual"]] = 0
-                        cam2 = float(rear[0])
-                        if len(rear)>0:
-                            phones[phone][label_to_index["front camera"]]= min(cam1,cam2)
-                            phones[phone][label_to_index["rear camera"]] = max(cam1,cam2)
-                else:
-                    phones[phone][label_to_index["front camera"]] = 0
-                    phones[phone][label_to_index["dual"]] = 0
-                    if len(front) > 0 and "mp" in phones[phone][label_to_index["single"]].lower():
-                        phones[phone][label_to_index["rear camera"]] = float(front[0])
-                    else:
-                        phones[phone][label_to_index["rear camera"]] = 0
-
-                new_phones[phone] = phones[phone]
-
-            label_to_index["thickness"] = label_to_index["dimensions"]
-            label_to_index.pop("dimensions")
-
-            phones = new_phones
+            for elt in nobat_phones:
+                if elt in old_specs:
+                    old_specs.pop(elt)
+                if elt in phones:
+                    phones.pop(elt)
 
             rel_labels = [label_to_index["model image"],label_to_index["announced"],
                           label_to_index["cpu"],label_to_index["ppi"],label_to_index["storage"],
@@ -455,34 +262,34 @@ def search():
             review_vocab_invidx = build_inv_idx(review_vocab)
             review_names_invidx = build_inv_idx(review_phonenames)
 
-            # review_list = [concat_reviews[p] for p in concat_reviews]
-            # vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
-            # my_matrix = vectorizer.fit_transform(review_list).transpose()
-            # u, s, v_trans = svds(my_matrix, k=100)
-            # words_compressed, _, docs_compressed = svds(my_matrix, k=30)
-            # docs_compressed = docs_compressed.transpose()
-            # word_to_index = vectorizer.vocabulary_
-            # index_to_word = {i:t for t,i in word_to_index.items()}
-            # words_compressed = normalize(words_compressed, axis = 1)
-            #
-            # def closest_words(word_in, k = 10):
-            #     if word_in not in word_to_index: return "Not in vocab."
-            #     sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
-            #     asort = np.argsort(-sims)[:k+1]
-            #     return [(index_to_word[i],sims[i]/sims[asort[0]]) for i in asort[1:]]
-            #
-            # def query_word(word):
-            #     close_words = closest_words(word)
-            #     return [word,close_words[0][0],close_words[1][0]]
+            review_list = [concat_reviews[p] for p in concat_reviews]
+            vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
+            my_matrix = vectorizer.fit_transform(review_list).transpose()
+            u, s, v_trans = svds(my_matrix, k=100)
+            words_compressed, _, docs_compressed = svds(my_matrix, k=30)
+            docs_compressed = docs_compressed.transpose()
+            word_to_index = vectorizer.vocabulary_
+            index_to_word = {i:t for t,i in word_to_index.items()}
+            words_compressed = normalize(words_compressed, axis = 1)
+
+            def closest_words(word_in, k = 10):
+                if word_in not in word_to_index: return "Not in vocab."
+                sims = words_compressed.dot(words_compressed[word_to_index[word_in],:])
+                asort = np.argsort(-sims)[:k+1]
+                return [(index_to_word[i],sims[i]/sims[asort[0]]) for i in asort[1:]]
+
+            def query_word(word):
+                close_words = closest_words(word)
+                return [word,close_words[0][0],close_words[1][0]]
 
             #Taking input from SVD
-            words_from_svd = feature_text.split(" ")
-            # for word in feature_text.split(" "):
-            #     words_from_svd += query_word(word)
+            words_from_svd = []
+            for word in feature_text.split(" "):
+                words_from_svd += query_word(word)
             n_words = len(words_from_svd)
             n_phones = len(review_phonenames)
             query_matrix = np.zeros((n_phones,n_words))
-            
+
             new_string = []
             for word in words_from_svd:
                 if word in review_vocab:
@@ -671,9 +478,25 @@ def search():
 
             scores = []
             ml_prices = []
+            feat_plot = []
+            feat_val = []
+            spec_names = dial_to_output
+            spec_vals = []
             for i in range(len(result)):
                 scores.append(final_rank[i][1])
-                ml_prices.append(feature_mat[phone_to_index[result[i]]][feat_to_index["price"]])
+                ml_prices.append(np.round(feature_mat[phone_to_index[result[i]]][feat_to_index["price"]],2))
+                for j,feat in enumerate(dial_labels):
+                    spec_vals.append(old_specs[result[i]][spec_to_index[feat]])
+                # specs[i] = []
+                # for j,feat in enumerate(dial_labels):
+                #     specs[i].append(old_specs[result[i]][spec_to_index[feat]])
+
+            for i,elt in enumerate(spec_vals):
+                if len(spec_vals)>72:
+                    spec_vals[i] = spec_vals[i][:72]
+
+            for i in range(len(scores)):
+                scores[i] /= max(scores)
 
             feat_labels = {'3.5mm jack': 'Audio Jack',
                        'battery': 'Battery Size',
@@ -699,20 +522,20 @@ def search():
                 feat_scores = []
                 for f in features:
                     label.append(feat_labels[f])
-                    feat_scores.append(feature_mat[phone_to_index[phone]][feat_to_index[f]])
-                #plotting
+                    feat_scores.append(np.round(feature_mat[phone_to_index[phone]][feat_to_index[f]],2))
                 index = np.arange(len(label))
                 plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
                 plt.xlabel('Selected Features', fontsize=5)
                 plt.ylabel('Normalized Scores', fontsize=5)
                 plt.xticks(index, label, fontsize=5)
                 plt.ylim((0.0,1.0))
-                plt.title('Scores of User Selected Features')
-                plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
+                plt.title('Scores of User Selected Features for ' + result[i])
+                plt.savefig('app/static/bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
                 plt.close()
+                return label,feat_scores
 
             for i,phone in enumerate(result[:18]):
-                plot_bar(phone, query_feat, i)
+                feat_plot,feat_val = plot_bar(phone,query_feat,i)
 
             # def clean_phone(url, i):
             #     with Image(filename=url) as img:
@@ -725,11 +548,11 @@ def search():
             # for i,phone in enumerate(result[:18]):
             #     clean_phone(features[phone][0], i)
 
-            print(result)
-            return [result,urls,new_string,scores,ml_prices]
+            return [result,urls,new_string,scores,ml_prices,spec_names,feat_plot,feat_val,spec_vals]
 
         final = main(budget,feature_list,condition)
 
 
         return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2, mate=mate, flag=flag, flag2=flag2,
-                                condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list,close_words = final[2],scores=final[3],price=final[4])
+                                condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list,close_words = final[2],scores=final[3],
+                                price=final[4],spnames=final[5],name_feat=final[6],name_val=final[7],spvals=final[8])

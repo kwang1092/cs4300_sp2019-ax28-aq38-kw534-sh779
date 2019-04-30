@@ -460,3 +460,8 @@ div input{
 .select-items div:hover, .same-as-selected {
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.phones:hover{
+  fill:#302f2f;
+  transition: all 0.3s ease 0s;
+}
