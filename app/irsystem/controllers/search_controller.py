@@ -70,7 +70,7 @@ def search():
     def main(budget, feature_list,condition):
         phones = {}
         labels = []
-        with open('gsmphones.csv', mode='r') as csv_file:
+        with open('app/static/gsmphones.csv', mode='r') as csv_file:
             csv_reader = csv.reader(csv_file)
             for i,row in enumerate(csv_reader):
                 if i == 0:
@@ -403,16 +403,16 @@ def search():
 
 
         #loading preprocessed review dictionaries
-        with open('concat_reviews.json', 'r') as fp:
+        with open('app/static/concat_reviews.json', 'r') as fp:
             concat_reviews = json.load(fp)
 
-        with open('review_stuff.json', 'r') as fp:
+        with open('app/static/review_stuff.json', 'r') as fp:
             review_stuff = json.load(fp)
 
-        with open('sent_anal_dict.json', 'r') as fp:
+        with open('app/static/sent_anal_dict.json', 'r') as fp:
             sent_anal_dict = json.load(fp)
 
-        with open('ratings.json', 'r') as fp:
+        with open('app/static/ratings.json', 'r') as fp:
             ratings = json.load(fp)
 
         #creating vocab from reviews and list of phones that we have reviews for
