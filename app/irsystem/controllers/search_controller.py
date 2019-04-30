@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from nltk.tokenize import TreebankWordTokenizer
 from sklearn import linear_model
 import Levenshtein
+# from wand.image import Image
+# from wand.color import Color
 
 apple_mult = 1.24
 project_name = "sellPhones"
@@ -80,7 +82,7 @@ def search():
         def main(budget, feature_list,condition):
             phones = {}
             labels = []
-            with open('app/static/gsmphones.csv', mode='r') as csv_file:
+            with open('app/static/gsmphones.csv', mode='r',encoding='utf-8') as csv_file:
                 csv_reader = csv.reader(csv_file)
                 for i,row in enumerate(csv_reader):
                     if i == 0:
@@ -412,16 +414,16 @@ def search():
 
 
             #loading preprocessed review dictionaries
-            with open('app/static/concat_reviews.json', 'r') as fp:
+            with open('app/static/concat_reviews.json', 'r',encoding='utf-8') as fp:
                 concat_reviews = json.load(fp)
 
-            with open('app/static/review_stuff.json', 'r') as fp:
+            with open('app/static/review_stuff.json', 'r',encoding='utf-8') as fp:
                 review_stuff = json.load(fp)
 
-            with open('app/static/sent_anal_dict.json', 'r') as fp:
+            with open('app/static/sent_anal_dict.json', 'r',encoding='utf=8') as fp:
                 sent_anal_dict = json.load(fp)
 
-            with open('app/static/ratings.json', 'r') as fp:
+            with open('app/static/ratings.json', 'r',encoding='utf-8') as fp:
                 ratings = json.load(fp)
 
             #creating vocab from reviews and list of phones that we have reviews for
@@ -704,22 +706,22 @@ def search():
                 plt.xticks(index, label, fontsize=5)
                 plt.ylim((0.0,1.0))
                 plt.title('Scores of User Selected Features')
-                plt.savefig('images/bar_%i.jpg' % (i+1), dpi=150, facecolor='#989898', edgecolor='#989898')
+                plt.savefig('bar_%i.jpg' % (i+1), dpi=150, facecolor='#989898', edgecolor='#989898')
                 plt.close()
 
             for i,phone in enumerate(result[:18]):
                 plot_bar(phone, query_feat, i)
 
-            def clean_phone(url, i):
-                with Image(filename=url) as img:
-                    img.format = 'png'
-                    with Color('#FDFDFD') as white:
-                        twenty_percent = int(65535 * 0.02)
-                        img.transparent_color(white, alpha=0.0, fuzz=twenty_percent)
-                    img.save(filename="images/clean_phone_%i.png" % (i+1)) #CHANGE TO DYNAMIC NAME OF PHONE RANKING
+            # def clean_phone(url, i):
+            #     with Image(filename=url) as img:
+            #         img.format = 'png'
+            #         with Color('#FDFDFD') as white:
+            #             twenty_percent = int(65535 * 0.02)
+            #             img.transparent_color(white, alpha=0.0, fuzz=twenty_percent)
+            #         img.save(filename="clean_phone_%i.png" % (i+1)) #CHANGE TO DYNAMIC NAME OF PHONE RANKING
 
-            for i,phone in enumerate(result[:18]):
-                clean_phone(features[phone][0], i)
+            # for i,phone in enumerate(result[:18]):
+            #     clean_phone(features[phone][0], i)
 
             print(result)
             return [result,urls,new_string,scores,ml_prices]
