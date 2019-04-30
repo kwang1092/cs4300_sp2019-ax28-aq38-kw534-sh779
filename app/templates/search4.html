@@ -124,11 +124,11 @@
             <span class="checkmark"></span>
           </label>
           <label class="radio_container" id="radio_new2">
-            <input name="condition" type="radio" name="radio" value="new" {% if condition =="new" %} checked='checked' {% endif %} required>
+            <input name="condition" type="radio" name="radio" value="new" {% if condition !="old" %} checked='checked' {% endif %}>
             <span class="radiomark"></span>
           </label>
           <label class="radio_container" id="radio_old2">
-            <input name="condition" type="radio" name="radio" value="old" {% if condition =="old" %} checked='checked' {% endif %} required>
+            <input name="condition" type="radio" name="radio" value="old" {% if condition =="old" %} checked='checked' {% endif %}>
             <span class="radiomark"></span>
           </label>
             <script>
@@ -309,7 +309,7 @@
       .attr("fill","#777777")
       .attr("text-anchor","middle")
       .attr("dominant-baseline","central")
-      .attr("x","42%")
+      .attr("x","43%")
       .attr("opacity","1")
       .attr("y", "50.3%")
       .on("click",function(){setupAdvanced();});
@@ -325,7 +325,7 @@
       .attr("fill","#777777")
       .attr("text-anchor","middle")
       .attr("dominant-baseline","central")
-      .attr("x","57.2%")
+      .attr("x","58%")
       .attr("opacity","1")
       .attr("y", "50.3%")
       .on("click",function(){console.log("clicked");setup();});
@@ -626,8 +626,9 @@
     svg.append("g")
       .append("text")
       .text("newer (2018+)")
+      .attr("id","newer")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -637,8 +638,9 @@
     svg.append("g")
       .append("text")
       .text("older")
+      .attr("id","older")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -753,6 +755,9 @@
 
     d3.select("#pink_section")
       .style("opacity","0");
+
+    d3.selectAll(".features")
+      .style("font-size","10px");
 
     d3.select("#pink_section")
       .transition()
@@ -940,8 +945,9 @@
     svg.append("g")
       .append("text")
       .text("newer (2018+)")
+      .attr("id","newer")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -951,8 +957,9 @@
     svg.append("g")
       .append("text")
       .text("older")
+      .attr("id","older")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -1010,6 +1017,9 @@
 
     d3.select("#pink_section")
       .style("opacity","0");
+
+    d3.selectAll(".features")
+      .style("font-size","10px");
 
     d3.select("#pink_section")
       .transition()
@@ -1322,8 +1332,9 @@
     svg.append("g")
       .append("text")
       .text("newer (2018+)")
+      .attr("id","newer")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -1333,8 +1344,9 @@
     svg.append("g")
       .append("text")
       .text("older")
+      .attr("id","older")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -1449,6 +1461,9 @@
 
     d3.select("#pink_section")
       .style("opacity","0");
+
+    d3.selectAll(".features")
+      .style("font-size","10px");
 
     d3.select("#pink_section")
       .style("opacity","1");
@@ -1624,8 +1639,9 @@
     svg.append("g")
       .append("text")
       .text("newer (2018+)")
+      .attr("id","newer")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -1635,8 +1651,9 @@
     svg.append("g")
       .append("text")
       .text("older")
+      .attr("id","older")
       .attr("font-family", "Nunito")
-      .attr("font-size","12px")
+      .attr("font-size","10px")
       .attr("fill","#777777")
       .attr("text-anchor","end")
       .attr("dominantBaseline","middle")
@@ -1699,6 +1716,8 @@
       .style("opacity","1");
     d3.select("#rectangle")
       .style("display","initial");
+    d3.selectAll(".features")
+      .style("font-size","10px");
     d3.select("#advanced")
       .style("display","initial");
     console.log("help");
@@ -1754,6 +1773,8 @@
     .transition()
     .duration(300)
     .attr("x1","25%");
+    d3.selectAll(".features")
+      .style("font-size","9px");
   }
   else{
     d3.select("#feature_line")
@@ -1762,6 +1783,10 @@
     .attr("x1","25%");
 
     d3.selectAll(".features")
+      .style("font-size","9px");
+    d3.select("#newer")
+      .style("font-size","9px");
+    d3.select("#older")
       .style("font-size","9px");
     d3.select("#what_else")
       .style("font-size","12px");
@@ -1982,6 +2007,7 @@
 
       svg.append("g")
         .append("rect")
+        .attr("class","diag")
         .attr("id","dialogue")
         .attr("width","70%")
         .attr("height","100%")
@@ -1989,11 +2015,12 @@
         .attr("ry", 6)
         .attr("x","15%")
         .attr("y","0%")
-        .style("fill","#989898")
+        .style("fill","#E9E9E9")
         .style("opacity","0");
 
       svg.append('image')
         .attr("id","dialogue_image")
+        .attr("class","diag")
         .attr('xlink:href', url)
         .attr('width', 225)
         .attr('height', 195)
@@ -2006,6 +2033,7 @@
         .text(phone)
         .attr("id","dialogue_text")
         .attr("font-style","bold")
+        .attr("class","diag")
         .attr("font-family", "Nunito")
         .attr("font-size","18px")
         .attr("fill","#000")
@@ -2015,6 +2043,7 @@
       svg.append("g")
         .append("text")
         .text("Query Features")
+        .attr("class","diag")
         .attr("id","dialogue_text")
         .attr("font-style","bold")
         .attr("font-family", "Nunito")
@@ -2025,6 +2054,7 @@
 
       svg.append("g")
         .append("text")
+        .attr("class","diag")
         .text("Miscellaneous")
         .attr("id","dialogue_text")
         .attr("font-style","bold")
@@ -2037,6 +2067,7 @@
       for(let i = 0; i<nfeat.length; i++){
         svg.append("g")
           .append("text")
+          .attr("class","diag")
           .text(nfeat[i]+ ": " + nval[i])
           .attr("id","dialogue_text")
           .attr("font-family", "Nunito")
@@ -2047,33 +2078,23 @@
       }
 
       for(let i = 0; i<snames.length; i++){
-        if(i<2){
-          svg.append("g")
-            .append("text")
-            .text(snames[i]+ ": " + svals[i])
-            .attr("id","dialogue_text")
-            .attr("font-family", "Nunito")
-            .attr("font-size","15px")
-            .attr("fill","#000")
-            .attr("x","20%")
-            .attr("y",(47.5+2.5*i)+"%");
-        } else {
-          svg.append("g")
-            .append("text")
-            .text(snames[i]+ ": " + svals[i])
-            .attr("id","dialogue_text")
-            .attr("font-family", "Nunito")
-            .attr("font-size","15px")
-            .attr("fill","#000")
-            .attr("x","20%")
-            .attr("y",(50+2.5*i)+"%");
-        }
+        svg.append("g")
+          .append("text")
+          .attr("class","diag")
+          .text(snames[i]+ ": " + svals[i])
+          .attr("id","dialogue_text")
+          .attr("font-family", "Nunito")
+          .attr("font-size","15px")
+          .attr("fill","#000")
+          .attr("x","20%")
+          .attr("y",(50+2.5*i)+"%");
       }
 
 
       svg.append("g")
         .append("text")
         .text("ML Model Price: $" + price)
+        .attr("class","diag")
         .attr("id","dialogue_text")
         .attr("font-family", "Nunito")
         .attr("font-size","15px")
@@ -2084,6 +2105,7 @@
       svg.append("g")
         .append("text")
         .text("Related Words: " + rel)
+        .attr("class","diag")
         .attr("id","dialogue_text")
         .attr("font-family", "Nunito")
         .attr("font-size","15px")
@@ -2094,6 +2116,7 @@
       svg.append("g")
         .append("text")
         .text("Similarity Score: " + score)
+        .attr("class","diag")
         .attr("id","dialogue_text")
         .attr("font-family", "Nunito")
         .attr("font-size","15px")
@@ -2101,141 +2124,32 @@
         .attr("x","60%")
         .attr("y","10%");
 
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Technology: " + tech[idx])
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","50%");
-      //
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Weight")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","52.5%");
-      //
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Screen Type")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","55%");
-      //
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Screen Size")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","57.5%");
-      //
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Screen Resolution")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","60%");
-      //
-      // svg.append("g")
-      //   .append("text")
-      //   .text("OS")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","62.5%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Processor")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","65%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Storage")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","67.5%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Battery")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","70%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Camera")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","72.5%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Audio Jack")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","75%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Sensors")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","77.5%");
-      // svg.append("g")
-      //   .append("text")
-      //   .text("Colors")
-      //   .attr("id","dialogue_text")
-      //   .attr("font-style","italic")
-      //   .attr("font-family", "Nunito")
-      //   .attr("font-size","15px")
-      //   .attr("fill","#000")
-      //   .attr("x","20%")
-      //   .attr("y","80%");
+      svg.append("g")
+        .append("text")
+        .text("X")
+        .attr("class","diag")
+        .attr("font-family", "Nunito")
+        .attr("font-size","30px")
+        .attr("fill","white")
+        .style("cursor","pointer")
+        .attr("x","80%")
+        .attr("y","10%")
+        .on("click",function(){
+          d3.selectAll(".diag")
+          .transition()
+          .duration(200)
+          .style("opacity","0")
+          .remove();
+        });
+
+
+      d3.selectAll(".diag")
+        .style("opacity","0");
+
+      d3.selectAll(".diag")
+        .transition()
+        .duration(500)
+        .style("opacity","1");
 
       d3.select("#dialogue")
         .transition()
@@ -2255,6 +2169,21 @@
       return false;
 
 
+    }
+
+    if(names.length == 0){
+      svg.append("text")
+      .text("No Results")
+      .attr("id","no_results")
+      .attr("font-family", "Nunito")
+      .attr("dominantBaseline","middle")
+      .attr('font-size',"20px")
+      .attr("x","50%")
+      .attr("y","30%");
+
+    }else{
+      d3.select("#no_results")
+        .remove();
     }
 
 
@@ -2291,7 +2220,7 @@
           .style("opacity",0)
           .attr("x",i%2*40+30 + "%")
           .attr("y",Math.floor((i/2))%3*27+20 + "%")
-          .call(wrap,120,names[i]);
+          .call(wrap,100,names[i]);
 
         svg.append("text")
           .text("#" + (i+1))
@@ -2347,7 +2276,7 @@
             .style("opacity",0)
             .attr("x",i%2*40+30 + "%")
             .attr("y",Math.floor((i/2))%3*27+20 + "%")
-            .call(wrap,120,names[i]);
+            .call(wrap,100,names[i]);
 
           svg.append("text")
             .text("#" + (i+1))
@@ -2394,7 +2323,7 @@
             .style("opacity",0)
             .attr("x",i%2*40+30 + "%")
             .attr("y",Math.floor((i/2))%3*27+20 + "%")
-            .call(wrap,120,names[i]);
+            .call(wrap,100,names[i]);
 
           svg.append("text")
             .text("#" + (i+1))
@@ -2444,12 +2373,18 @@
     if(level==="basic"){
     d3.select("#feature_line")
     .attr("x1","25%");
+    d3.selectAll(".features")
+      .style("font-size","9px");
   }
   else{
     d3.select("#feature_line")
     .attr("x1","25%");
 
     d3.selectAll(".features")
+      .style("font-size","9px");
+    d3.select("#newer")
+      .style("font-size","9px");
+    d3.select("#older")
       .style("font-size","9px");
     d3.select("#what_else")
       .style("font-size","12px");
@@ -2458,15 +2393,11 @@
   }
 
     d3.select("#rectangle")
-      .transition()
-      .duration(300)
       .attr("height",537)
       .attr("rx",5)
       .attr("ry",5);
 
     d3.select("#pink_section")
-    .transition()
-    .duration(300)
     .attr("width", "39%")
     .attr("x","1%");
 
@@ -2475,6 +2406,13 @@
 
     names = {{names | tojson}};
     urls = {{urls | tojson}};
+    related = {{close_words | tojson}};
+    scores = {{scores | tojson}};
+    prices = {{price | tojson}};
+    snames = {{spnames | tojson}};
+    nfeat = {{name_feat | tojson}};
+    nval = {{name_val | tojson}};
+    svals = {{spvals | tojson}};
 
     let svg = d3.select("#blue_section");
     let ifnext = 0;
@@ -2663,6 +2601,7 @@
 
       svg.append("g")
         .append("rect")
+        .attr("class","diag")
         .attr("id","dialogue")
         .attr("width","70%")
         .attr("height","100%")
@@ -2670,17 +2609,141 @@
         .attr("ry", 6)
         .attr("x","15%")
         .attr("y","0%")
-        .style("fill","#989898")
+        .style("fill","#E9E9E9")
         .style("opacity","0");
 
       svg.append('image')
         .attr("id","dialogue_image")
+        .attr("class","diag")
         .attr('xlink:href', url)
-        .attr('width', 300)
-        .attr('height', 260)
+        .attr('width', 225)
+        .attr('height', 195)
         .style("opacity",0)
         .attr('x',"20%")
         .attr('y',"5%");
+
+      svg.append("g")
+        .append("text")
+        .text(phone)
+        .attr("id","dialogue_text")
+        .attr("font-style","bold")
+        .attr("class","diag")
+        .attr("font-family", "Nunito")
+        .attr("font-size","18px")
+        .attr("fill","#000")
+        .attr("x","20%")
+        .attr("y","45%");
+
+      svg.append("g")
+        .append("text")
+        .text("Query Features")
+        .attr("class","diag")
+        .attr("id","dialogue_text")
+        .attr("font-style","bold")
+        .attr("font-family", "Nunito")
+        .attr("font-size","18px")
+        .attr("fill","#000")
+        .attr("x","40%")
+        .attr("y","7.5%");
+
+      svg.append("g")
+        .append("text")
+        .attr("class","diag")
+        .text("Miscellaneous")
+        .attr("id","dialogue_text")
+        .attr("font-style","bold")
+        .attr("font-family", "Nunito")
+        .attr("font-size","18px")
+        .attr("fill","#000")
+        .attr("x","60%")
+        .attr("y","7.5%");
+
+      for(let i = 0; i<nfeat.length; i++){
+        svg.append("g")
+          .append("text")
+          .attr("class","diag")
+          .text(nfeat[i]+ ": " + nval[i])
+          .attr("id","dialogue_text")
+          .attr("font-family", "Nunito")
+          .attr("font-size","15px")
+          .attr("fill","#000")
+          .attr("x","45%")
+          .attr("y",(10+2.5*i)+"%");
+      }
+
+      for(let i = 0; i<snames.length; i++){
+        svg.append("g")
+          .append("text")
+          .attr("class","diag")
+          .text(snames[i]+ ": " + svals[i])
+          .attr("id","dialogue_text")
+          .attr("font-family", "Nunito")
+          .attr("font-size","15px")
+          .attr("fill","#000")
+          .attr("x","20%")
+          .attr("y",(50+2.5*i)+"%");
+      }
+
+
+      svg.append("g")
+        .append("text")
+        .text("ML Model Price: $" + price)
+        .attr("class","diag")
+        .attr("id","dialogue_text")
+        .attr("font-family", "Nunito")
+        .attr("font-size","15px")
+        .attr("fill","#000")
+        .attr("x","60%")
+        .attr("y","12.5%");
+
+      svg.append("g")
+        .append("text")
+        .text("Related Words: " + rel)
+        .attr("class","diag")
+        .attr("id","dialogue_text")
+        .attr("font-family", "Nunito")
+        .attr("font-size","15px")
+        .attr("fill","#000")
+        .attr("x","60%")
+        .attr("y","15%");
+
+      svg.append("g")
+        .append("text")
+        .text("Similarity Score: " + score)
+        .attr("class","diag")
+        .attr("id","dialogue_text")
+        .attr("font-family", "Nunito")
+        .attr("font-size","15px")
+        .attr("fill","#000")
+        .attr("x","60%")
+        .attr("y","10%");
+
+      svg.append("g")
+        .append("text")
+        .text("X")
+        .attr("class","diag")
+        .attr("font-family", "Nunito")
+        .attr("font-size","30px")
+        .attr("fill","white")
+        .style("cursor","pointer")
+        .attr("x","80%")
+        .attr("y","10%")
+        .on("click",function(){
+          d3.selectAll(".diag")
+          .transition()
+          .duration(200)
+          .style("opacity","0")
+          .remove();
+        });
+
+
+      d3.selectAll(".diag")
+        .style("opacity","0");
+
+      d3.selectAll(".diag")
+        .transition()
+        .duration(500)
+        .style("opacity","1");
 
       d3.select("#dialogue")
         .transition()
@@ -2692,9 +2755,29 @@
         .duration(500)
         .style("opacity","1");
 
+      d3.select("#dialogue_text")
+        .transition()
+        .duration(500)
+        .style("opacity","1")
+
       return false;
 
 
+    }
+
+    if(names.length == 0){
+      svg.append("text")
+      .text("No Results")
+      .attr("id","no_results")
+      .attr("font-family", "Nunito")
+      .attr("dominantBaseline","middle")
+      .attr('font-size',"20px")
+      .attr("x","50%")
+      .attr("y","30%");
+
+    }else{
+      d3.select("#no_results")
+        .remove();
     }
 
 
@@ -2711,9 +2794,7 @@
           .attr("rx",5)
           .attr("ry",5)
           .style("fill", "#e9e9e9")
-          .style("cursor","pointer")
           .attr("dominantBaseline","middle")
-          .on("click",function(){dialogue(names[i],urls[i],related[i],scores[i],prices[i],i);})
           .style("opacity","0.35")
           .attr("x",i%2*40+10+"%")
           .attr("y",Math.floor((i/2))%3*27+15 + "%");
@@ -2733,7 +2814,7 @@
           .style("opacity",0)
           .attr("x",i%2*40+30 + "%")
           .attr("y",Math.floor((i/2))%3*27+20 + "%")
-          .call(wrap,120,names[i]);
+          .call(wrap,100,names[i]);
 
         svg.append("text")
           .text("#" + (i+1))
@@ -2784,12 +2865,12 @@
             .attr("textLength","150px")
             .attr("font-size", "14px")
             .attr("fill","#E9E9E9")
-            .on("click",function(){dialogue(names[i],urls[i]);})
+            .on("click",function(){dialogue(names[i],urls[i],related[i],scores[i],prices[i],i);})
             .style("display","none")
             .style("opacity",0)
             .attr("x",i%2*40+30 + "%")
             .attr("y",Math.floor((i/2))%3*27+20 + "%")
-            .call(wrap,120,names[i]);
+            .call(wrap,100,names[i]);
 
           svg.append("text")
             .text("#" + (i+1))
@@ -2836,7 +2917,7 @@
             .style("opacity",0)
             .attr("x",i%2*40+30 + "%")
             .attr("y",Math.floor((i/2))%3*27+20 + "%")
-            .call(wrap,120,names[i]);
+            .call(wrap,100,names[i]);
 
           svg.append("text")
             .text("#" + (i+1))
@@ -2873,6 +2954,7 @@
     clicked = 1;
     setTimeout(function() { fill_blue(); }, 300);
     return false;
+
 
   }
 
