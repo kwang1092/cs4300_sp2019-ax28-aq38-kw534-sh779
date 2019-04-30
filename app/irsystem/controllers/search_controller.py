@@ -539,8 +539,10 @@ def search():
                     # price_range = budget
 
             prices = feature_mat[:,feat_to_index["price"]]
-            budget = str(budget)
-            starting = int(0)
+            if int(budget) >= 600:
+                starting = 200
+            else:
+                starting = 0
             ending = int(budget)
             price_range = np.intersect1d(np.where(prices>=starting)[0],np.where(prices<ending)[0])
 
