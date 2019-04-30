@@ -97,11 +97,11 @@ def search():
             for i in range(len(labels)):
                 spec_to_index[labels[i].lower()] = i
 
-            dial_labels = ["technology","weight","type","size","resolution","os",
+            dial_labels = ["announced","price","technology","weight","type","size","resolution","os",
                "cpu","internal","battery","single","3.5mm jack",
                "sensors","colors"]
 
-            dial_to_output = ["Technology","Weight","Screen Type","Screen Size","Screen Resolution","OS",
+            dial_to_output = ["Release","MSRP","Technology","Weight","Screen Type","Screen Size","Screen Resolution","OS",
                "Processor","Storage","Battery","Camera","Audio Jack",
                "Sensors","Colors"]
 
@@ -523,15 +523,6 @@ def search():
                 for f in features:
                     label.append(feat_labels[f])
                     feat_scores.append(np.round(feature_mat[phone_to_index[phone]][feat_to_index[f]],2))
-                index = np.arange(len(label))
-                plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
-                plt.xlabel('Selected Features', fontsize=5)
-                plt.ylabel('Normalized Scores', fontsize=5)
-                plt.xticks(index, label, fontsize=5)
-                plt.ylim((0.0,1.0))
-                plt.title('Scores of User Selected Features for ' + result[i])
-                plt.savefig('app/static/bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
-                plt.close()
                 return label,feat_scores
 
             for i,phone in enumerate(result[:18]):
