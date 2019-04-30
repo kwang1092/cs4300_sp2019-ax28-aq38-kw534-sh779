@@ -332,7 +332,6 @@ def search():
             feature_mat[i,feat_to_index["thickness"]] = 20-feature_mat[i,feat_to_index["thickness"]]
             phone_to_index[phone] = i
             index_to_phone.append(phone)
-
         prices = feature_mat[:,feat_to_index["price"]]
 
         for i in range(len(feature_mat[0])):
