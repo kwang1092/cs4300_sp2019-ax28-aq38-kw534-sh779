@@ -37,6 +37,11 @@ border: none
 color: #4285F4;
 } */
 
+/* #dialogue{
+outline: 9999px solid rgba(0,0,0,0.5);
+position: absolute;
+padding:700px;
+} */
 
 #main_options{
   text-align: center;
@@ -59,7 +64,7 @@ html {
 body {
   color: #555;
   margin: 0;
-  padding: 1em 1.5em;
+  padding: 1.44em 1.5em;
 }
 
 label {
@@ -131,16 +136,36 @@ display:block;
 top:60%;
 text-align:center;
 position:absolute;
-left:22%;
+left:43%;
 }
 
 .button:hover {
-color: #494949 !important;
 cursor:pointer;
-background: #FFF5ED;
-border-radius: 50px;
-border-color: #494949 !important;
+padding-right:23px;
+padding-left:23px;
+padding-top:12px;
+padding-bottom:12px;
+top:59.85%;
+left:42.6%;
+/* padding-right:25px; */
+/* padding-top:15px;
+padding-bottom:15px; */
 transition: all 0.3s ease 0s;
+}
+
+.main_rect:hover {
+  transform: scale(1.1);
+}
+.main_rect2:hover {
+  transform: scale(1.1);
+}
+.main_rect {
+  transition: all 0.2s;
+  transform-origin: 57% 50%;
+}
+.main_rect2 {
+  transition: all 0.2s;
+  transform-origin: 43% 50%;
 }
 
 /*the container must be positioned relative:*/
@@ -227,4 +252,211 @@ div input{
 
 #texts{
   margin-top:20px;
+}
+
+#slider2{
+  margin-left:11%;
+  width:78%;
+  margin-top:75px;
+  display:inline-block;
+  vertical-align: middle;
+}
+
+/* Customize the label (the container) */
+.check_container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.check_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 15px;
+  width: 15px;
+  background-color: #ccc;
+}
+
+/* On mouse-over, add a grey background color */
+.check_container:hover input ~ .checkmark {
+  background-color: #454545;
+}
+
+/* When the checkbox is checked, add a blue background */
+.check_container input:checked ~ .checkmark {
+  background-color: #AAC9DD;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.check_container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.check_container .checkmark:after {
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
+/* The container */
+.radio_container {
+  display: block;
+  position: relative;
+  padding-left: 25px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.radio_container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Create a custom radio button */
+.radiomark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 12.5px;
+  width: 12.5px;
+  background-color: #ccc;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.radio_container:hover input ~ .radiomark {
+  background-color: #454545;
+}
+
+/* When the radio button is checked, add a blue background */
+.radio_container input:checked ~ .radiomark {
+  background-color: #AAC9DD;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.radiomark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.radio_container input:checked ~ .radiomark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.radio_container .radiomark:after {
+ 	top: 4.5px;
+	left: 4.5px;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: white;
+}
+
+/*the container must be positioned relative:*/
+.custom-select {
+  position: relative;
+  font-family: Nunito;
+  border:0;
+  border-radius:15px;
+}
+
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+
+.select-selected {
+  background-color: #DCDCDC;
+  border-radius:15px;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 14px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-color: #969696 transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #E9E9E9 transparent;
+  top: 7px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  color: #969696;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+  border-radius:15px;
+}
+
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: #DCDCDC;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  border-radius:15px;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 0, 0, 0.1);
 }

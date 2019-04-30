@@ -21,8 +21,12 @@ net_id = "Alvin Qu: aq38, Andrew Xu: ax28, Kevin Wang: kw534, Samuel Han: sh779"
 def search():
     check = False
     mate = False
+    check2 = False
+    mate2 = False
     past = request.args.get('past')
     past2 = request.args.get('past2')
+    past3 = request.args.get('past3')
+    past4 = request.args.get('past4')
     if past:
         check = True
         mate=True
@@ -33,6 +37,17 @@ def search():
         flag = True
     else:
         flag = False
+
+    if past3:
+        check2 = True
+        mate2=True
+    else:
+        mate2 = True
+
+    if past4 == "True":
+        flag2 = True
+    else:
+        flag2 = False
 
     input_arr = []
     final = [[0],[0]]
@@ -45,8 +60,8 @@ def search():
     feature_text = request.args.get('feature_text')
 
     if not feature_list:
-        return render_template('search.html', name=project_name,netid=net_id, check=check,  mate=mate, flag=flag,
-                                condition=condition, names=[], urls = [], budget=str(budget))
+        return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2,  mate=mate, flag=flag, flag2 = flag2,
+                                condition=condition, names=[], urls = [], budget=str(budget), features = [])
 
     if budget and feature_list and condition:
 
@@ -305,9 +320,8 @@ def search():
 
             prices = feature_mat[:,feat_to_index["price"]]
             budget = str(budget)
-            budget = budget.split(";")
-            starting = int(budget[0])
-            ending = int(budget[1])
+            starting = int(0)
+            ending = int(budget)
             price_range = np.intersect1d(np.where(prices>=starting)[0],np.where(prices<ending)[0])
 
             # budget = int(budget)
@@ -566,5 +580,5 @@ def search():
         final = main(budget,feature_list,condition)
 
 
-    return render_template('search.html', name=project_name,netid=net_id, check=check,  mate=mate, flag=flag,
-                            condition=condition, names=final[0], urls = final[1],budget=str(budget))
+    return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2, mate=mate, flag=flag, flag2=flag2,
+                            condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list)
