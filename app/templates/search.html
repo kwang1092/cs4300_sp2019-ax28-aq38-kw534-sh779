@@ -124,11 +124,11 @@
             <span class="checkmark"></span>
           </label>
           <label class="radio_container" id="radio_new2">
-            <input name="condition" type="radio" name="radio" value="new" {% if condition =="new" %} checked='checked' {% endif %} required>
+            <input name="condition" type="radio" name="radio" value="new" {% if condition !="old" %} checked='checked' {% endif %}>
             <span class="radiomark"></span>
           </label>
           <label class="radio_container" id="radio_old2">
-            <input name="condition" type="radio" name="radio" value="old" {% if condition =="old" %} checked='checked' {% endif %} required>
+            <input name="condition" type="radio" name="radio" value="old" {% if condition =="old" %} checked='checked' {% endif %}>
             <span class="radiomark"></span>
           </label>
             <script>
