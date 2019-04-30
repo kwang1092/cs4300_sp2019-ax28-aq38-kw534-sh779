@@ -706,7 +706,7 @@ def search():
                 plt.xticks(index, label, fontsize=5)
                 plt.ylim((0.0,1.0))
                 plt.title('Scores of User Selected Features')
-                plt.savefig('bar_%i.jpg' % (i+1), dpi=150, facecolor='#989898', edgecolor='#989898')
+                plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
                 plt.close()
 
             for i,phone in enumerate(result[:18]):
