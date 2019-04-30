@@ -694,25 +694,25 @@ def search():
                        'waterproof': 'Water Resistance',
                       }
 
-            def plot_bar(phone, features, i):
-                label = []
-                feat_scores = []
-                for f in features:
-                    label.append(feat_labels[f])
-                    feat_scores.append(feature_mat[phone_to_index[phone]][feat_to_index[f]])
-                #plotting
-                index = np.arange(len(label))
-                plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
-                plt.xlabel('Selected Features', fontsize=5)
-                plt.ylabel('Normalized Scores', fontsize=5)
-                plt.xticks(index, label, fontsize=5)
-                plt.ylim((0.0,1.0))
-                plt.title('Scores of User Selected Features')
-                plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
-                plt.close()
-
-            for i,phone in enumerate(result[:18]):
-                plot_bar(phone, query_feat, i)
+            # def plot_bar(phone, features, i):
+            #     label = []
+            #     feat_scores = []
+            #     for f in features:
+            #         label.append(feat_labels[f])
+            #         feat_scores.append(feature_mat[phone_to_index[phone]][feat_to_index[f]])
+            #     #plotting
+            #     index = np.arange(len(label))
+            #     plt.bar(index, feat_scores, color=('#ABCCD4'), edgecolor=('#ADD4D4'), linewidth=2)
+            #     plt.xlabel('Selected Features', fontsize=5)
+            #     plt.ylabel('Normalized Scores', fontsize=5)
+            #     plt.xticks(index, label, fontsize=5)
+            #     plt.ylim((0.0,1.0))
+            #     plt.title('Scores of User Selected Features')
+            #     plt.savefig('bar_%i.jpg' % (i+1), facecolor='#989898', edgecolor='#989898')
+            #     plt.close()
+            #
+            # for i,phone in enumerate(result[:18]):
+            #     plot_bar(phone, query_feat, i)
 
             # def clean_phone(url, i):
             #     with Image(filename=url) as img:
