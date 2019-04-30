@@ -539,7 +539,7 @@ def search():
                     # price_range = budget
 
             prices = feature_mat[:,feat_to_index["price"]]
-            budget = str(budget)
+            budget = int(budget)
             if budget >= 600:
                 starting = 200
             else:
