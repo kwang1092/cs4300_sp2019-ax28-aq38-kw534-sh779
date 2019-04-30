@@ -10,6 +10,7 @@ from scipy.sparse.linalg import svds
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import PolynomialFeatures
 import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from nltk.tokenize import TreebankWordTokenizer
 from sklearn import linear_model
