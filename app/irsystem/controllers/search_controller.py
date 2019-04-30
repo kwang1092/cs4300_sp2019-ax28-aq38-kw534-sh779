@@ -62,6 +62,11 @@ def search():
     old_phone = request.args.get('old_phone')
     feature_text = request.args.get('feature_text')
 
+    if not feature_text:
+        feature_text = ""
+
+
+
     # if not feature_list:
     #     return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2,  mate=mate, flag=flag, flag2 = flag2,
     #                             condition=condition, names=[], urls = [], budget=str(budget), features = [])
@@ -466,7 +471,7 @@ def search():
 
         #Taking input from SVD
         words_from_svd = []
-        for word in custom_input_query.split(" "):
+        for word in feature_text.split(" "):
             words_from_svd += query_word(word)
         n_words = len(words_from_svd)
         n_phones = len(review_phonenames)
@@ -571,11 +576,9 @@ def search():
             result = sorted(result, key=lambda x: x[0])
             return result
 
-        query_feat= ["battery","rear camera","ram"]
         if len(query_feat)==0:
             query_feat = set(feat_to_index.keys())-set(bin_feats.keys())
 
-        old_query = "samsung"
         results = {}
         ranked_results = []
         best_match = edit_distance_search(old_query,phones.keys())[0][1]
