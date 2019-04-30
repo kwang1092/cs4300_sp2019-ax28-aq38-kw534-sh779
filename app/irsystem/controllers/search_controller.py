@@ -482,12 +482,12 @@ def search():
             n_words = len(words_from_svd)
             n_phones = len(review_phonenames)
             query_matrix = np.zeros((n_phones,n_words))
-            #
-            # new_string = []
-            # for word in words_from_svd:
-            #     if word in review_vocab:
-            #         new_string.append(word)
-            #
+            
+            new_string = []
+            for word in words_from_svd:
+                if word in review_vocab:
+                    new_string.append(word)
+
             #RANKINGS using custom input
             for phone in review_phonenames:
                 p = review_names_invidx[phone]
