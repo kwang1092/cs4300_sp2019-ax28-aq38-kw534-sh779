@@ -526,25 +526,25 @@ def search():
                 # max_price = 1600
                 # price_range = budget
 
-                prices = feature_mat[:,feat_to_index["price"]]
-                budget = str(budget)
-                starting = int(0)
-                ending = int(budget)
-                price_range = np.intersect1d(np.where(prices>=starting)[0],np.where(prices<ending)[0])
+        prices = feature_mat[:,feat_to_index["price"]]
+        budget = str(budget)
+        starting = int(0)
+        ending = int(budget)
+        price_range = np.intersect1d(np.where(prices>=starting)[0],np.where(prices<ending)[0])
 
-                if condition == "new":
-                    condition = 1
-                else:
-                    condition = 0
-                query_feat = feature_list
+        if condition == "new":
+            condition = 1
+        else:
+            condition = 0
+        query_feat = feature_list
 
-                #query_feat = ["ram","front camera","cpu","rear camera"]
-                # price_range= luxury
+        #query_feat = ["ram","front camera","cpu","rear camera"]
+        # price_range= luxury
 
-                if old_phone:
-                    old_query = old_phone
-                else:
-                    old_query = ""
+        if old_phone:
+            old_query = old_phone
+        else:
+            old_query = ""
 
 
         def checkBinary(idx,query_feat):
@@ -716,8 +716,8 @@ def search():
         print(result)
         return [result,urls,new_string,scores,ml_prices]
 
-final = main(budget,feature_list,condition)
+    final = main(budget,feature_list,condition)
 
 
-return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2, mate=mate, flag=flag, flag2=flag2,
-                        condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list,close_words = final[2],scores=final[3],price=final[4])
+    return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2, mate=mate, flag=flag, flag2=flag2,
+                            condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list,close_words = final[2],scores=final[3],price=final[4])
