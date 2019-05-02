@@ -1111,7 +1111,8 @@
             .attr("fill","#000")
             .attr("x","20%")
             .attr("y",(47.5+2.5*i)+"%");
-          } else {
+          }
+          else if(i>=9){
             svg.append("g")
             .append("text")
             .attr("class","diag")
@@ -1121,7 +1122,21 @@
             .attr("font-size","15px")
             .attr("fill","#000")
             .attr("x","20%")
-            .attr("y",(50+2.5*i)+"%");
+            .attr("y",(52.5+2.5*i)+"%")
+            .call(wrap,800,snames[i]+ ": " + svals[idx][i]);
+          }
+          else {
+            svg.append("g")
+            .append("text")
+            .attr("class","diag")
+            .text(snames[i]+ ": " + svals[idx][i])
+            .attr("id","dialogue_text")
+            .attr("font-family", "Nunito")
+            .attr("font-size","15px")
+            .attr("fill","#000")
+            .attr("x","20%")
+            .attr("y",(50+2.5*i)+"%")
+            .call(wrap,800,snames[i]+ ": " + svals[idx][i]);
           }
         }
 
@@ -1283,7 +1298,7 @@
           .style("opacity",0)
           .attr("x",i%2*40+30 + "%")
           .attr("y",Math.floor((i/2))%3*27+20 + "%")
-          .call(wrap,100,names[i]);
+          .call(wrap,80,names[i]);
 
           svg.append("text")
           .text("#" + (i+1))
@@ -1335,11 +1350,10 @@
           .attr("font-size", "14px")
           .attr("fill","#E9E9E9")
           .on("click",function(){dialogue(names[i],urls[i],related[i],scores[i],prices[i],i);})
-          .style("display","none")
           .style("opacity",0)
           .attr("x",i%2*40+30 + "%")
           .attr("y",Math.floor((i/2))%3*27+20 + "%")
-          .call(wrap,100,names[i]);
+          .call(wrap,80,names[i]);
 
           svg.append("text")
           .text("#" + (i+1))
@@ -1382,11 +1396,10 @@
           .attr("textLength","150px")
           .attr("font-size", "14px")
           .attr("fill","#E9E9E9")
-          .style("display","none")
           .style("opacity",0)
           .attr("x",i%2*40+30 + "%")
           .attr("y",Math.floor((i/2))%3*27+20 + "%")
-          .call(wrap,100,names[i]);
+          .call(wrap,80,names[i]);
 
           svg.append("text")
           .text("#" + (i+1))

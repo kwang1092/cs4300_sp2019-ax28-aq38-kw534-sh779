@@ -86,6 +86,7 @@ def search():
     if budget and feature_text and condition:
 
         def main(budget, feature_text,condition,preference):
+            feature_text = str(feature_text)
             preference = float(preference)
             phones = {}
             old_specs = {}
@@ -298,7 +299,7 @@ def search():
 
             #Processing user's input query
             treebank_tokenizer = TreebankWordTokenizer()
-            input_query_clean = re.sub(r"[,.;@#?!&$]+\ *", " ", input_query)
+            input_query_clean = re.sub(r"[,;@#?!&$]+\ *", " ", input_query)
             input_query_token = treebank_tokenizer.tokenize(input_query_clean.lower())
 
             related_words1 = []
