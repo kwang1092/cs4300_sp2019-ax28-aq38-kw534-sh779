@@ -59,28 +59,34 @@ def search():
 
     condition = request.args.get('condition')
     budget = request.args.get('budgets')
-    feature_list = request.args.getlist('feature')
+    preference = request.args.get('prefs')
     old_phone = ""
     old_phone = request.args.get('old_phone')
     feature_text = request.args.get('feature_text')
 
-    if not feature_text:
-        feature_text = ""
+    print(condition,budget,preference,old_phone,feature_text)
+
+
+    if not feature_text :
+        return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2,  mate=mate, flag=flag, flag2 = flag2,
+                                condition=condition, names=[], urls = [], budget=str(budget), features = "None", close_words=[],scores=[],price=[],spnames=[],
+                                name_feat=[],name_val=[],spvals=[],prefs=str(preference),best_match="Not Found",old_phone="Not Found")
 
     if not old_phone:
-        old_phone = ""
+        old_phone = "Not Found"
+    if not condition:
+        condition = "new"
+
+    if not preference:
+        preference = 0.40
 
 
 
 
-    if not feature_list :
-        return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2,  mate=mate, flag=flag, flag2 = flag2,
-                                condition=condition, names=[], urls = [], budget=str(budget), features = [], close_words=[],scores=[],price=[],spnames=[],
-                                name_feat=[],name_val=[],spvals=[])
+    if budget and feature_text and condition:
 
-    if budget and feature_list and condition:
-
-        def main(budget, feature_list,condition):
+        def main(budget, feature_text,condition,preference):
+            preference = float(preference)
             phones = {}
             old_specs = {}
             labels = []
@@ -97,6 +103,12 @@ def search():
             for i in range(len(labels)):
                 spec_to_index[labels[i].lower()] = i
 
+            brand_dict = {}
+            model_dict = {}
+            for elt in old_specs:
+                brand_dict[elt] = old_specs[elt][0].lower()
+                model_dict[elt] = old_specs[elt][1].split(" ",1)[1].lower()
+
             dial_labels = ["announced","price","technology","weight","type","size","resolution","os",
                "cpu","internal","battery","single","3.5mm jack",
                "sensors","colors"]
@@ -109,9 +121,9 @@ def search():
                 "Sony Ericsson Jalou D&G; edition","AT&T; Quickfire",
                 "AT&T; SMT5700","AT&T; Mustang","AT&T; 8525","HTC One X AT&T;"]
 
-            with open('app/static/phones_dict.json','r') as file:
+            with open('app/static/phones_dict.json','r',encoding='utf-8') as file:
                 phones = json.load(file)
-            with open('app/static/labels_dict.json','r') as file:
+            with open('app/static/labels_dict.json','r',encoding='utf-8') as file:
                 label_to_index = json.load(file)
 
             for elt in nobat_phones:
@@ -151,6 +163,11 @@ def search():
                 feature_mat[i,feat_to_index["thickness"]] = 20-feature_mat[i,feat_to_index["thickness"]]
                 phone_to_index[phone] = i
                 index_to_phone.append(phone)
+            for i in range(len(feature_mat)):
+                if feature_mat[i,feat_to_index["ram"]] > 4:
+                    feature_mat[i,feat_to_index["ram"]] = 3
+                if feature_mat[i,feat_to_index["storage"]] > 512:
+                    feature_mat[i,feat_to_index["storage"]] = 64
             prices = feature_mat[:,feat_to_index["price"]]
 
             for i in range(len(feature_mat[0])):
@@ -219,15 +236,11 @@ def search():
                 curr_price -= 0.05*(1-max(0.5,priceDiff(p,poly_pred[old_ptoi[p]])))*age*curr_price
                 feature_mat[phone_to_index[p]][feat_to_index["price"]] = curr_price
 
-
             #loading preprocessed review dictionaries
-            with open('app/static/concat_reviews.json', 'r',encoding='utf-8') as fp:
-                concat_reviews = json.load(fp)
-
             with open('app/static/review_stuff.json', 'r',encoding='utf-8') as fp:
                 review_stuff = json.load(fp)
 
-            with open('app/static/sent_anal_dict.json', 'r',encoding='utf=8') as fp:
+            with open('app/static/sent_anal_dict.json', 'r',encoding='utf-8') as fp:
                 sent_anal_dict = json.load(fp)
 
             with open('app/static/ratings.json', 'r',encoding='utf-8') as fp:
@@ -239,7 +252,13 @@ def search():
             n_phones = len(review_phonenames)
             n_vocab  = len(review_vocab)
 
-            #function for building inverted index
+            #Create matrix from saves json of look-around sentiment analysis polarity values
+            lookaround_matrix = np.zeros((n_phones,n_vocab))
+            for key,value in sent_anal_dict.items():
+                coord = key.split(",")
+                x,y = int(coord[0]),int(coord[1])
+                lookaround_matrix[x,y] = value
+
             def build_inv_idx(lst):
                 """ Builds an inverted index.
 
@@ -251,26 +270,16 @@ def search():
                     inverted_idx[lst[idx]] = idx
                 return inverted_idx
 
-            #Create matrix from saves json of look-around sentiment analysis polarity values
-            lookaround_matrix = np.zeros((n_phones,n_vocab))
-            for key,value in sent_anal_dict.items():
-                coord = key.split(",")
-                x,y = int(coord[0]),int(coord[1])
-                lookaround_matrix[x,y] = value
-
             #build inverted indexes for vocab and reviewed phone names
             review_vocab_invidx = build_inv_idx(review_vocab)
             review_names_invidx = build_inv_idx(review_phonenames)
 
-            review_list = [concat_reviews[p] for p in concat_reviews]
-            vectorizer = TfidfVectorizer(stop_words = 'english',encoding='utf-8',lowercase=True)
-            my_matrix = vectorizer.fit_transform(review_list).transpose()
-            u, s, v_trans = svds(my_matrix, k=100)
-            words_compressed, _, docs_compressed = svds(my_matrix, k=30)
-            docs_compressed = docs_compressed.transpose()
-            word_to_index = vectorizer.vocabulary_
+            with open('app/static/word_to_index.json', 'r',encoding='utf-8') as fp:
+                word_to_index = json.load(fp)
+
             index_to_word = {i:t for t,i in word_to_index.items()}
-            words_compressed = normalize(words_compressed, axis = 1)
+
+            words_compressed = np.load('app/static/words_compressed.npy')
 
             def closest_words(word_in, k = 10):
                 if word_in not in word_to_index: return "Not in vocab."
@@ -280,25 +289,132 @@ def search():
 
             def query_word(word):
                 close_words = closest_words(word)
+                if close_words == "Not in vocab.":
+                    return [word]
                 return [word,close_words[0][0],close_words[1][0]]
 
-            #Taking input from SVD
+            #USER INPUT
+            input_query = feature_text
+
+            #Processing user's input query
+            treebank_tokenizer = TreebankWordTokenizer()
+            input_query_clean = re.sub(r"[,.;@#?!&$]+\ *", " ", input_query)
+            input_query_token = treebank_tokenizer.tokenize(input_query_clean.lower())
+
+            related_words1 = []
+            related_words2 = []
+
             words_from_svd = []
-            for word in feature_text.split(" "):
-                words_from_svd += query_word(word)
-            n_words = len(words_from_svd)
+            for word in input_query_token:
+                sep = ", "
+                svd_results = query_word(word)
+                words_from_svd += svd_results
+                if len(svd_results) > 1:
+                    related_words2.append(svd_results[0] + " -> " + sep.join(svd_results[1:]))
+                else:
+                    related_words2.append(svd_results[0] + " -> ")
+
+            svd_query = []
+            rev_query = []
+            for word in words_from_svd:
+                svd_query.append(word)
+                if word in review_vocab:
+                    rev_query.append(word)
+
+            feat_keywords = {'3.5mm jack': 'aux auxiliary 3.5mm 3.5 headphone jack port input',
+                           'battery': 'battery life longlasting duration durable durability',
+                           'card slot': 'sd slot micro microsd external',
+                           'cpu': 'processor cpu speed lag power fast quick smooth performance chip chipset core quad octa hexa game games',
+                           'dual': 'dualcameras dualcam zoom aperture',
+                           'face': 'face unlock id facial recognition faceid security sensors',
+                           'finger': 'fingerprint finger print sensor security sensors',
+                           'front camera': 'front cameras selfie selfies snapchat instagram megapixel',
+                           'ppi': 'screen resolution ppi dpi pixel pixels clarity hd amoled oled led',
+                           'ram': 'memory ram lag',
+                           'rear camera': 'rear camera cameras snapchat instagram megapixel picture pictures image images zoom bokeh',
+                           'sim': 'sim dualsim simcard',
+                           'size': 'screensize bezel big bigger huge giant large larger',
+                           'storage': 'internal storage gb gigabytes',
+                           'thickness': 'thinness thickness sleek slim thicc thick thin light lightweight weight weigh',
+                           'video': 'video recording record videorecording stabilize stabilizer slowmo slow-mo motion fps',
+                           'waterproof': 'water dust waterproof dustproof durable durability water/dust dust/water ip68 ip67',
+
+                             #UNIMPLEMENTED
+                            #'size2': 'small smaller light lightweight weight weigh pocketable pocketability',
+                           #'fastcharge': 'quickcharge quickcharging fastcharge fastcharging charge charging turbocharge turbocharging',
+                           #'protection': 'durable durability protection corning gorilla scratch drop shatter'
+                          }
+
+            feat_names = {'3.5mm jack': 'Audio Jack',
+                           'battery': 'Battery Size',
+                           'card slot': 'SD Card Slot',
+                           'cpu': 'Processor (CPU)',
+                           'dual': 'Dual Rear Cameras',
+                           'face': 'Face Unlock',
+                           'finger': 'Fingerprint Sensor',
+                           'front camera': 'Camera (Front)',
+                           'ppi': 'Screen Resolution',
+                           'ram': 'Memory (RAM)',
+                           'rear camera': 'Camera (Rear)',
+                           'sim': 'Dual SIM',
+                           'size': 'Screen Size (Bigger)',
+                           'storage': 'Internal Storage',
+                           'thickness': 'Thinness',
+                           'video': 'Video Quality',
+                           'waterproof': 'Water/Dust Resistance',
+
+                          #UNIMPLEMENTED
+                          #'size2': 'Size (Smaller)',
+                           #'fastcharge': 'Fast/Quick Charging',
+                           #'protection': 'Screen Protection (Shatter/Scratch-Resistant)'
+                          }
+
+            feat_names_inv = {i:t for t,i in feat_names.items()}
+
+
+            def edit_distance_search(query, names):
+                result = []
+                for name in names:
+                    score = Levenshtein.distance(query.lower(), name.lower())
+                    result.append((score,name))
+                result = sorted(result, key=lambda x: x[0])
+                return result
+
+            #fetching features
+            feat_from_query = []
+            for w in svd_query:
+                for f in feat_keywords:
+                    keywords = feat_keywords[f].split(" ")
+                    for kw in keywords:
+                        if w == kw:
+                            feat_from_query.append(f)
+
+            if len(feat_from_query) == 0:
+                for w in svd_query:
+                    topmatch = edit_distance_search(w, list(feat_names.values()))[0]
+                    if topmatch[0] <= 7:
+                        feat_from_query.append(feat_names_inv[topmatch[1]])
+
+            feat_from_query = list(set(feat_from_query))
+
+            for w in feat_from_query:
+                if w not in rev_query and w in review_vocab:
+                    related_words1.append(w + " (feature)")
+
+            features_from_query = [feat_names[f] for f in feat_from_query]
+
+            related_words = related_words1 + related_words2
+
+
+
+            #RANKINGS using reviews
+            n_words = len(rev_query)
             n_phones = len(review_phonenames)
             query_matrix = np.zeros((n_phones,n_words))
 
-            new_string = []
-            for word in words_from_svd:
-                if word in review_vocab:
-                    new_string.append(word)
-
-            #RANKINGS using custom input
             for phone in review_phonenames:
                 p = review_names_invidx[phone]
-                for i,word in enumerate(new_string):
+                for i,word in enumerate(rev_query):
                     w = review_vocab_invidx[word]
                     if i%3 != 0:
                         query_matrix[p,i] = lookaround_matrix[p,w] / 50
@@ -307,7 +423,7 @@ def search():
 
             #Outputting ranking based on social component
             query_matrix = np.sum(query_matrix, axis=1)
-            query_matrix = query_matrix / len(new_string)
+            query_matrix = query_matrix / len(rev_query)
 
             #WITH RATINGS (to be merged with cell above)
             for phone in review_phonenames:
@@ -318,18 +434,22 @@ def search():
                 polarity = query_matrix[p]
 
                 if rating >= 4 and polarity > 0:
-                    rating_effect = 1.3*ratio
+                    rating_effect = 2.0*ratio
                 elif rating >= 4 and polarity < 0:
-                    rating_effect = -1.3*ratio
+                    rating_effect = -1.5*ratio
                 elif rating <= 2.5 and polarity > 0:
-                    rating_effect = -1.0*ratio
+                    rating_effect = -1.5*ratio
                 elif rating <= 2.5 and polarity < 0:
-                    rating_effect = 1.3+(1-ratio)
+                    rating_effect = 2.0+(1-ratio)
 
                 query_matrix[p] = rating_effect*polarity
 
             ranking_asc = list(np.argsort(query_matrix))
             ranking_desc = ranking_asc[::-1]
+
+            # for i in range(30):
+            #     print(str(i+1) + ". " + review_phonenames[ranking_desc[i]] + " -- "\
+            #           + str(query_matrix[ranking_desc[i]] / query_matrix[ranking_desc[0]]))
 
             phone_to_review = {}
             for i in range(n_phones):
@@ -337,6 +457,7 @@ def search():
             for phone in phones:
                 if phone not in phone_to_review:
                     phone_to_review[phone] = 0
+
 
             bin_feats = {"3.5mm jack":0,"dual":1,"sim":2,"announced":3,"card slot":4,"waterproof":5,"face":6,"finger":7}
 
@@ -357,7 +478,7 @@ def search():
                 condition = 1
             else:
                 condition = 0
-            query_feat = feature_list
+            query_feat = feat_from_query
 
             #query_feat = ["ram","front camera","cpu","rear camera"]
             # price_range= luxury
@@ -383,16 +504,17 @@ def search():
                 for elt in ranks:
                     print(elt)
 
-            def edit_distance_search(query, names):
-                result = []
-                for name in names:
-                    score = Levenshtein.distance(query.lower(), name.lower())
-                    result.append((score,name))
-                result = sorted(result, key=lambda x: x[0])
-                return result
+
 
             if len(query_feat)==0:
                 query_feat = set(feat_to_index.keys())-set(bin_feats.keys())
+
+            old_query = old_query.lower()
+            old_brand = old_query.split(" ")[0]
+            boosted_brand = ""
+            matched_brand = edit_distance_search(old_brand,brand_dict.keys())
+            if matched_brand[0][0] < 5:
+                boosted_brand = matched_brand[0][1]
 
             results = {}
             ranked_results = []
@@ -400,6 +522,7 @@ def search():
             best_dist  = edit_distance_search(old_query,phones.keys())[0][0]
             best_match_vec = feature_mat[phone_to_index[best_match]]
             best_vec = np.zeros(len(query_feat))
+
 
             physical_feat = True
             for elt in query_feat:
@@ -417,7 +540,10 @@ def search():
                     and feature_mat[p][feat_to_index["thickness"]]>0.2 and feature_mat[p][feat_to_index["thickness"]]<1:
                     temp = np.zeros(len(query_feat))
                     for i,feat in enumerate(query_feat):
-                        temp[i] = feature_mat[p,feat_to_index[feat]]
+                        if feature_mat[p,feat_to_index[feat]] == 0:
+                            temp[i] = 0.01
+                        else:
+                            temp[i] = feature_mat[p,feat_to_index[feat]]
                     if checkBinary(phone_to_index[best_match],query_feat):
                         cossim[p] = np.dot(temp,best_vec)/np.linalg.norm(temp)*np.linalg.norm(best_vec)
                     else:
@@ -446,7 +572,7 @@ def search():
                 vec /= query_vec
                 brand = prange_to_phone[i].split(" ")[0]
                 if not physical_feat:
-                    if brand == "Apple" or brand == "Google":
+                    if brand == "Apple" or brand == "Google" or brand == boosted_brand:
                         vec *= 1.2
                     elif brand == "Samsung":
                         vec *= 1.05
@@ -456,12 +582,15 @@ def search():
             rankings = np.where(cossim_vec>0)
             rankings = np.argsort(cossim_vec[rankings])[::-1]
             cossim_vec /= max(cossim_vec)
+            found_phone = "none found"
             for idx in rankings:
-                if best_dist > 5:
+                dist = Levenshtein.distance(best_match.lower(),prange_to_phone[idx].lower())
+                if dist > 5:
                     results[prange_to_phone[idx]] += cossim_vec[idx]
                 else:
-                    results[prange_to_phone[idx]] += 3*cossim_vec[idx]
-                    results[prange_to_phone[idx]] /= 4
+                    results[prange_to_phone[idx]] += 0.75/(1-0.01*preference)*cossim_vec[idx]
+            if best_dist > 5:
+                best_match = "Not Found"
 
             final_rank = []
             for phone in results:
@@ -483,10 +612,11 @@ def search():
             spec_names = dial_to_output
             spec_vals = []
             for i in range(len(result)):
-                scores.append(final_rank[i][1])
+                scores.append(np.round(final_rank[i][1],2))
                 ml_prices.append(np.round(feature_mat[phone_to_index[result[i]]][feat_to_index["price"]],2))
+                spec_vals.append([])
                 for j,feat in enumerate(dial_labels):
-                    spec_vals.append(old_specs[result[i]][spec_to_index[feat]])
+                    spec_vals[i].append(old_specs[result[i]][spec_to_index[feat]])
                 # specs[i] = []
                 # for j,feat in enumerate(dial_labels):
                 #     specs[i].append(old_specs[result[i]][spec_to_index[feat]])
@@ -496,13 +626,14 @@ def search():
                     spec_vals[i] = spec_vals[i][:72]
 
             for i in range(len(scores)):
-                scores[i] /= max(scores)
+                scores[i] /= int(np.max(scores))+1
+                scores[i] = np.round(scores[i],3)
 
             feat_labels = {'3.5mm jack': 'Audio Jack',
                        'battery': 'Battery Size',
                        'card slot': 'SD Card Slot',
                        'cpu': 'Processor (CPU)',
-                       'dual': 'Dual Camera',
+                       'dual': 'Dual Rear Cameras',
                        'face': 'Face Unlock',
                        'finger': 'Fingerprint Sensor',
                        'front camera': 'Front Camera',
@@ -510,12 +641,13 @@ def search():
                        'ram': 'Memory (RAM)',
                        'rear camera': 'Rear Camera',
                        'sim': 'Dual SIM',
-                       'size': 'Screen Size',
+                       'size': 'Screen Size (Bigger)',
                        'storage': 'Internal Storage',
                        'thickness': 'Thinness',
                        'video': 'Video Quality',
-                       'waterproof': 'Water Resistance',
+                       'waterproof': 'Water/Dust Resistance',
                       }
+
 
             def plot_bar(phone, features, i):
                 label = []
@@ -539,11 +671,12 @@ def search():
             # for i,phone in enumerate(result[:18]):
             #     clean_phone(features[phone][0], i)
 
-            return [result,urls,new_string,scores,ml_prices,spec_names,feat_plot,feat_val,spec_vals]
+            return [result,urls,related_words,scores,ml_prices,spec_names,feat_plot,feat_val,spec_vals, best_match]
 
-        final = main(budget,feature_list,condition)
+        final = main(budget,feature_text,condition,preference)
 
 
         return render_template('search.html', name=project_name,netid=net_id, check=check, check2=check2, mate2=mate2, mate=mate, flag=flag, flag2=flag2,
-                                condition=condition, names=final[0], urls = final[1],budget=str(budget), features=feature_list,close_words = final[2],scores=final[3],
-                                price=final[4],spnames=final[5],name_feat=final[6],name_val=final[7],spvals=final[8])
+                            condition=condition, names=final[0], urls = final[1],budget=str(budget),close_words = final[2],scores=final[3],
+                            price=final[4],spnames=final[5],name_feat=final[6],name_val=final[7],spvals=final[8], prefs=str(preference), features=feature_text,
+                            best_match=final[9],old_phone = old_phone)

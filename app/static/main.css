@@ -133,7 +133,7 @@ border: 4px solid #A9CFE8 !important;
 border-radius: 6px;
 cursor:pointer;
 display:block;
-top:60%;
+top:50%;
 text-align:center;
 position:absolute;
 left:43%;
@@ -145,12 +145,26 @@ padding-right:23px;
 padding-left:23px;
 padding-top:12px;
 padding-bottom:12px;
-top:59.85%;
+top:49.85%;
 left:42.6%;
 /* padding-right:25px; */
 /* padding-top:15px;
 padding-bottom:15px; */
 transition: all 0.3s ease 0s;
+}
+
+.button:active {
+cursor:pointer;
+top:50.15%;
+/* padding-right:25px; */
+/* padding-top:15px;
+padding-bottom:15px; */
+transition: all 0.3s ease 0s;
+}
+
+#logo:hover{
+  fill:#969696;
+  transition: all 0.2s;
 }
 
 .main_rect:hover {
@@ -254,10 +268,17 @@ div input{
   margin-top:20px;
 }
 
+#pref_slider{
+  margin-left:14%;
+  width:33%;
+  margin-top:40px;
+  display:inline-block;
+  vertical-align: middle;
+}
 #slider2{
   margin-left:11%;
   width:78%;
-  margin-top:75px;
+  margin-top:80px;
   display:inline-block;
   vertical-align: middle;
 }
@@ -371,6 +392,7 @@ div input{
 /* When the radio button is checked, add a blue background */
 .radio_container input:checked ~ .radiomark {
   background-color: #AAC9DD;
+  transition: all 0.3s;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -392,7 +414,6 @@ div input{
 	width: 4px;
 	height: 4px;
 	border-radius: 50%;
-	background: white;
 }
 
 /*the container must be positioned relative:*/
@@ -464,4 +485,8 @@ div input{
 .phones:hover{
   fill:#302f2f;
   transition: all 0.3s ease 0s;
+}
+
+::placeholder {
+  opacity:0.5;
 }
