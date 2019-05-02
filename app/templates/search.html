@@ -1028,11 +1028,11 @@
         .append("rect")
         .attr("class","diag")
         .attr("id","dialogue")
-        .attr("width","70%")
+        .attr("width","75%")
         .attr("height","100%")
         .attr("rx", 6)
         .attr("ry", 6)
-        .attr("x","15%")
+        .attr("x","12.5%")
         .attr("y","0%")
         .style("fill","#E9E9E9")
         .style("opacity","0");
@@ -1044,7 +1044,7 @@
         .attr('width', 225)
         .attr('height', 195)
         .style("opacity",0)
-        .attr('x',"20%")
+        .attr('x',"17.5%")
         .attr('y',"5%");
 
         svg.append("g")
@@ -1057,7 +1057,7 @@
         .attr("font-family", "Nunito")
         .attr("font-size","18px")
         .attr("fill","#000")
-        .attr("x","20%")
+        .attr("x","17.5%")
         .attr("y","45%");
 
         svg.append("g")
@@ -1109,10 +1109,10 @@
             .attr("font-family", "Nunito")
             .attr("font-size","15px")
             .attr("fill","#000")
-            .attr("x","20%")
+            .attr("x","17.5%")
             .attr("y",(47.5+2.5*i)+"%");
           }
-          else if(i>=9){
+          else if(i>=9 && i < 11){
             svg.append("g")
             .append("text")
             .attr("class","diag")
@@ -1121,8 +1121,21 @@
             .attr("font-family", "Nunito")
             .attr("font-size","15px")
             .attr("fill","#000")
-            .attr("x","20%")
+            .attr("x","17.5%")
             .attr("y",(52.5+2.5*i)+"%")
+            .call(wrap,800,snames[i]+ ": " + svals[idx][i]);
+          }
+          else if (i>=11){
+            svg.append("g")
+            .append("text")
+            .attr("class","diag")
+            .text(snames[i]+ ": " + svals[idx][i])
+            .attr("id","dialogue_text")
+            .attr("font-family", "Nunito")
+            .attr("font-size","15px")
+            .attr("fill","#000")
+            .attr("x","17.5%")
+            .attr("y",(57.5+2.5*i)+"%")
             .call(wrap,800,snames[i]+ ": " + svals[idx][i]);
           }
           else {
@@ -1134,7 +1147,7 @@
             .attr("font-family", "Nunito")
             .attr("font-size","15px")
             .attr("fill","#000")
-            .attr("x","20%")
+            .attr("x","17.5%")
             .attr("y",(50+2.5*i)+"%")
             .call(wrap,800,snames[i]+ ": " + svals[idx][i]);
           }
@@ -1208,7 +1221,7 @@
         .attr("font-size","30px")
         .attr("fill","white")
         .style("cursor","pointer")
-        .attr("x","80%")
+        .attr("x","82.5%")
         .attr("y","10%")
         .on("click",function(){
           d3.selectAll(".diag")
